@@ -64,11 +64,11 @@ public class IautosListService {
 	public void fetch() throws InterruptedException {
 		ExecutorService es = Executors.newFixedThreadPool(this.getPoolSize());
 
-//		for (int i = 0; i < this.getPoolSize(); i++) {
-//			es.submit(new IautosListFetcher(this.getListQueue().poll(), this
-//					.getListQueue()));
-//			es.wait();
-//		}
+		// for (int i = 0; i < this.getPoolSize(); i++) {
+		// es.submit(new IautosListFetcher(this.getListQueue().poll(), this
+		// .getListQueue()));
+		// es.wait();
+		// }
 		while (true) {
 			while (!es.isShutdown() && this.getListQueue().size() > 0) {
 				es.submit(new IautosListFetcher(this.getListQueue().poll(),

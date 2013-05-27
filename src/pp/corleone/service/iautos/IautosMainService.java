@@ -34,6 +34,7 @@ public class IautosMainService {
 	public void setLogicMap(
 			ConcurrentSkipListMap<String, AbstractQueue<?>> logicMap) {
 		this.logicMap = logicMap;
+		
 	}
 
 	public static void main(String[] args) throws InterruptedException {

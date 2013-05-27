@@ -40,17 +40,17 @@ public class IautosCityCallback extends Callback<Collection<String>> {
 		Elements provinceATags = doc.select("div.province>a[href]");
 		for (Element provinceATag : provinceATags) {
 			String provinceName = provinceATag.text()
-					.replace("ï¼š".intern(), "".intern()).intern();
+					.replace("£º".intern(), "".intern()).intern();
 			if (this.getCities().contains(provinceName)) {
 				String provinceUrl = IautosConstant.searchPage
 						+ provinceATag.attr("href".intern());
 				String perUrl = IautosConstant.buildPersonalUrl(provinceUrl);
-				urls.add(perUrl);// ä¸ªäººé™åº
+				urls.add(perUrl);// ¸öÈË½µĞò
 				this.getLogger().info(
 						"append province personal " + provinceName + ":"
 								+ perUrl);
 				String shopUrl = IautosConstant.buildShopUrl(provinceUrl);
-				urls.add(shopUrl);// å•†æˆ·é™åº
+				urls.add(shopUrl);// ÉÌ»§½µĞò
 				this.getLogger()
 						.info("append province shop " + provinceName + ":"
 								+ shopUrl);
@@ -60,21 +60,21 @@ public class IautosCityCallback extends Callback<Collection<String>> {
 		Elements cityATags = doc.select("div.city>div>p>a[href]".intern());
 		for (Element cityATag : cityATags) {
 			String cityName = cityATag.text()
-					.replace("ï¼š".intern(), "".intern()).intern();
+					.replace("£º".intern(), "".intern()).intern();
 			if (this.getCities().contains(cityName)) {
 				String cityUrl = IautosConstant.searchPage
 						+ cityATag.attr("href".intern()).replace("city-", "");
-				// urls.add(cityUrl + "pas1ds9vepcatcpbnscac/");// å•†æˆ·é™åº
-				// urls.add(cityUrl + "pas2ds9vepcatcpbnscac/");// ä¸ªäººé™åº
+				// urls.add(cityUrl + "pas1ds9vepcatcpbnscac/");// ÉÌ»§½µĞò
+				// urls.add(cityUrl + "pas2ds9vepcatcpbnscac/");// ¸öÈË½µĞò
 				// this.getLogger()
 				// .info("append city " + cityName + ":" + cityUrl);
 
 				String perUrl = IautosConstant.buildPersonalUrl(cityUrl);
-				urls.add(perUrl);// ä¸ªäººé™åº
+				urls.add(perUrl);// ¸öÈË½µĞò
 				this.getLogger().info(
 						"append city personal " + cityName + ":" + perUrl);
 				String shopUrl = IautosConstant.buildShopUrl(cityUrl);
-				urls.add(shopUrl);// å•†æˆ·é™åº
+				urls.add(shopUrl);// ÉÌ»§½µĞò
 				this.getLogger().info(
 						"append city shop " + cityName + ":" + shopUrl);
 
