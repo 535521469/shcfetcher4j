@@ -1,33 +1,49 @@
 package pp.corleone.service;
 
+import java.util.concurrent.Callable;
+
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public abstract class Fetcher<T> implements Runnable {
-
-	public Fetcher(Fetchable<T> fetcherable) {
-		this.setFetcherable(fetcherable);
-	}
-
-	public Fetcher() {
-	}
+public abstract class Fetcher implements Callable<ResponseWrapper> {
 
 	protected final Logger getLogger() {
 		return LoggerFactory.getLogger(this.getClass());
 	}
 
-	private Fetchable<T> fetcherable;
+	private RequestWrapper requestWrapper;
 
-	public Fetchable<T> getFetcherable() {
-		return fetcherable;
+	public Fetcher(RequestWrapper requestWrapper) {
+		this.setRequestWrapper(requestWrapper);
 	}
 
-	public void setFetcherable(Fetchable<T> fetcherable) {
-		this.fetcherable = fetcherable;
+	public RequestWrapper getRequestWrapper() {
+		return requestWrapper;
 	}
 
-	protected abstract boolean validSource(RequestWrapper reqw);
+	public void setRequestWrapper(RequestWrapper requestWrapper) {
+		this.requestWrapper = requestWrapper;
+	}
 
-	protected abstract boolean shouldVisit(String url);
+	@Override
+	public ResponseWrapper call() throws Exception {
+		String url = this.getRequestWrapper().getUrl();
+		ResponseWrapper rw = null;
+
+		try {
+
+			// throw new SocketTimeoutException();
+
+			Document doc = Jsoup.connect(url).get();
+			return new ResponseWrapper(doc, this.requestWrapper);
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return rw;
+	}
 
 }
