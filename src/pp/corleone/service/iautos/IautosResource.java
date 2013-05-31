@@ -26,7 +26,7 @@ public class IautosResource {
 	}
 
 	public static ThreadPoolExecutor threadPool = (ThreadPoolExecutor) Executors
-			.newFixedThreadPool(4);
+			.newFixedThreadPool(8);
 
 	public static BlockingQueue<Fetcher> fetchQueue = new LinkedBlockingQueue<Fetcher>();
 	public static BlockingQueue<Callback> extractQueue = new LinkedBlockingQueue<Callback>();

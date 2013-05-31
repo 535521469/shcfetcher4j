@@ -34,7 +34,7 @@ public abstract class Fetcher implements Callable<ResponseWrapper> {
 
 		try {
 
-			// throw new SocketTimeoutException();
+			getLogger().debug("crawl " + url);
 
 			Document doc = Jsoup.connect(url).get();
 			return new ResponseWrapper(doc, this.requestWrapper);

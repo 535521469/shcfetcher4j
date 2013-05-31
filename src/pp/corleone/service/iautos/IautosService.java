@@ -8,6 +8,9 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import pp.corleone.domain.iautos.ConfigConstant;
 import pp.corleone.domain.iautos.IautosConstant;
 import pp.corleone.service.Callback;
@@ -48,13 +51,18 @@ public class IautosService extends Service {
 	}
 
 	class ChangeCityFetcherManager implements Runnable {
+
+		protected final Logger getLogger() {
+			return LoggerFactory.getLogger(this.getClass());
+		}
+
 		@Override
 		public void run() {
 
 			String city = IautosResource.prop
 					.getProperty(ConfigConstant.cities);
 
-			getLogger().info("get cities config ->" + city);
+			this.getLogger().info("get cities config ->" + city);
 
 			Set<String> cities = new HashSet<String>(Arrays.asList(city
 					.split(",")));

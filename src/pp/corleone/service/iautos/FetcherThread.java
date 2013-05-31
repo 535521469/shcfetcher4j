@@ -6,11 +6,18 @@ import java.util.concurrent.Future;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import pp.corleone.service.Callback;
 import pp.corleone.service.Fetcher;
 import pp.corleone.service.ResponseWrapper;
 
 public class FetcherThread extends Thread {
+
+	protected final Logger getLogger() {
+		return LoggerFactory.getLogger(this.getClass());
+	}
 
 	@Override
 	public void run() {
@@ -19,14 +26,18 @@ public class FetcherThread extends Thread {
 
 		Fetcher fetcher = null;
 
-		do {
+		while (true) {
 			try {
-				fetcher = IautosResource.fetchQueue.poll(500,
+				fetcher = IautosResource.fetchQueue.poll(3000,
 						TimeUnit.MILLISECONDS);
 				if (null == fetcher) {
-					TimeUnit.MILLISECONDS.sleep(500);
+					getLogger().info("non fetchable ...");
 					continue;
 				}
+
+				getLogger().debug(
+						"fetch " + fetcher.getRequestWrapper().getUrl());
+
 				Future<ResponseWrapper> fu = pe.submit(fetcher);
 				try {
 					ResponseWrapper responseWrapper = fu.get();
@@ -49,7 +60,9 @@ public class FetcherThread extends Thread {
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
-		} while (null == fetcher || IautosResource.fetchQueue.size() > 0);
+		}
+
+		// System.out.println("............");
 
 	}
 

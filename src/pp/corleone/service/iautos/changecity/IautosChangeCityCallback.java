@@ -61,7 +61,7 @@ public class IautosChangeCityCallback extends Callback {
 						provinceName);
 
 				fetchers.add(new IautosListFetcher(provincePer));// 个人降序
-				this.getLogger().info(
+				this.getLogger().debug(
 						"personal " + provinceName + ":" + provincePerUrl);
 
 				String provinceShopUrl = IautosConstant
@@ -71,7 +71,7 @@ public class IautosChangeCityCallback extends Callback {
 				provinceShop.getMeta().put(IautosListCallback.CONTEXT_KEY_CITY,
 						provinceName);
 				fetchers.add(new IautosListFetcher(provinceShop));// 商户降序
-				this.getLogger().info(
+				this.getLogger().debug(
 						"shop " + provinceName + ":" + provinceShopUrl);
 			}
 		}
@@ -93,24 +93,25 @@ public class IautosChangeCityCallback extends Callback {
 
 				fetchers.add(new IautosListFetcher(cityPer));// 个人降序
 				this.getLogger()
-						.info("personal " + cityName + ":" + cityPerUrl);
+						.debug("personal " + cityName + ":" + cityPerUrl);
 
 				String cityShopUrl = IautosConstant.buildShopUrl(cityUrl);
 
-				RequestWrapper cityShop = new RequestWrapper(cityPerUrl,
+				RequestWrapper cityShop = new RequestWrapper(cityShopUrl,
 						listCallback);
 				cityShop.getMeta().put(IautosListCallback.CONTEXT_KEY_CITY,
 						cityName);
 
 				fetchers.add(new IautosListFetcher(cityShop));// 商户降序
-				this.getLogger().info("shop " + cityName + ":" + cityShopUrl);
+				this.getLogger().debug("shop " + cityName + ":" + cityShopUrl);
 			}
 		}
 
 		Map<String, Collection<?>> resultMap = new HashMap<String, Collection<?>>();
 		resultMap.put(FetcherConstants.Fetcher, fetchers);
 
-		this.getLogger().info("total append " + fetchers.size() + " cities");
+		this.getLogger().info(
+				"total fetcher " + fetchers.size() + " cities to crawl ");
 		return resultMap;
 	}
 }

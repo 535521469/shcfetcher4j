@@ -9,31 +9,39 @@ import java.util.concurrent.Future;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import pp.corleone.domain.iautos.FetcherConstants;
 import pp.corleone.service.Callback;
 import pp.corleone.service.Fetcher;
 
 public class ExtractThread extends Thread {
 
+	protected final Logger getLogger() {
+		return LoggerFactory.getLogger(this.getClass());
+	}
+
 	@Override
 	public void run() {
-
-		ThreadPoolExecutor pe = IautosResource.threadPool;
 
 		while (true) {
 			Callback cb = IautosResource.extractQueue.poll();
 
 			if (null == cb) {
 				try {
-					TimeUnit.SECONDS.sleep(1);
+					TimeUnit.MILLISECONDS.sleep(1);
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
 			} else {
 				try {
-					Future<Map<String, Collection<?>>> f = pe.submit(cb);
+
+					Future<Map<String, Collection<?>>> f = IautosResource.threadPool
+							.submit(cb);
 
 					if (null == f) {
+						getLogger().info("non callback ...");
 						continue;
 					}
 
@@ -45,7 +53,8 @@ public class ExtractThread extends Thread {
 						continue;
 					}
 
-					if (result.containsKey(FetcherConstants.Fetcher)) {
+					if (null != result
+							&& result.containsKey(FetcherConstants.Fetcher)) {
 
 						Collection<?> fs = result.get(FetcherConstants.Fetcher);
 						Map<String, Integer> offered = new HashMap<String, Integer>();
@@ -56,8 +65,10 @@ public class ExtractThread extends Thread {
 							boolean offeredFlag = false;
 
 							do {
+
 								offeredFlag = IautosResource.fetchQueue.offer(
 										fetcher, 500, TimeUnit.MILLISECONDS);
+
 							} while (!offeredFlag);
 
 							if (offered.containsKey(fetcherKey)) {
@@ -70,8 +81,10 @@ public class ExtractThread extends Thread {
 
 						for (Map.Entry<String, Integer> offer : offered
 								.entrySet()) {
-							System.out.println(offer.getKey() + ":"
-									+ offer.getValue());
+							getLogger().info(
+									"add " + offer.getValue()
+											+ " fetcher task :"
+											+ offer.getKey());
 						}
 					}
 
@@ -83,5 +96,4 @@ public class ExtractThread extends Thread {
 
 		}
 	}
-
 }
