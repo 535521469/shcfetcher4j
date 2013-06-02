@@ -7,6 +7,7 @@ public class IautosConstant {
 	public final static String CITIES = "CITIES";
 	public final static String LIST = "LIST";
 	public final static String DETAIL = "DETAIL";
+	public final static String CAR_INFO = "CARINFO";
 
 	public static String buildShopUrl(String url) {
 		return url + "pas1ds9vepcatcpbnscac/";

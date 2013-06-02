@@ -29,6 +29,7 @@ public class IautosService extends Service {
 		is.init();
 		is.fetch();
 		is.extract();
+
 	}
 
 	public void init() {

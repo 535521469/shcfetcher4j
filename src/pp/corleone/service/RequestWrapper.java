@@ -1,16 +1,25 @@
 package pp.corleone.service;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public class RequestWrapper {
 
-	private String url;
 	private Callback callback;
 
+	private String url;
 	private Map<String, Object> meta = new HashMap<String, Object>();
 	private Map<String, Object> context = new HashMap<String, Object>();
+
+	public String getUrl() {
+		return url;
+	}
+
+	public void setUrl(String url) {
+		this.url = url;
+	}
 
 	public Map<String, Object> getContext() {
 		return context;
@@ -36,14 +45,6 @@ public class RequestWrapper {
 		this.callback = callback;
 	}
 
-	public String getUrl() {
-		return url;
-	}
-
-	public void setUrl(String url) {
-		this.url = url;
-	}
-
 	public RequestWrapper(String url) {
 		this.setUrl(url);
 	}
@@ -53,7 +54,14 @@ public class RequestWrapper {
 		this.setUrl(url);
 	}
 
-	private List<RequestWrapper> referRequestWrappers;
+	public RequestWrapper(String url, Callback callback,
+			RequestWrapper referRequestWarpper) {
+		this.setCallback(callback);
+		this.setUrl(url);
+		this.getReferRequestWrappers().add(referRequestWarpper);
+	}
+
+	private List<RequestWrapper> referRequestWrappers = new ArrayList<RequestWrapper>();
 
 	public List<RequestWrapper> getReferRequestWrappers() {
 		return referRequestWrappers;

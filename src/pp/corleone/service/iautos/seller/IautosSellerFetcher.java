@@ -3,9 +3,9 @@ package pp.corleone.service.iautos.seller;
 import pp.corleone.service.Fetcher;
 import pp.corleone.service.RequestWrapper;
 
-public class IautosDetailFetcher extends Fetcher {
+public class IautosSellerFetcher extends Fetcher {
 
-	public IautosDetailFetcher(RequestWrapper requestWrapper) {
+	public IautosSellerFetcher(RequestWrapper requestWrapper) {
 		super(requestWrapper);
 	}
 

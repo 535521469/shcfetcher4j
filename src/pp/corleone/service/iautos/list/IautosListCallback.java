@@ -10,11 +10,11 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import pp.corleone.domain.iautos.FetcherConstants;
+import pp.corleone.domain.iautos.IautosCarInfo;
 import pp.corleone.domain.iautos.IautosConstant;
 import pp.corleone.service.Callback;
 import pp.corleone.service.Fetcher;
 import pp.corleone.service.RequestWrapper;
-import pp.corleone.service.iautos.IautosResource;
 import pp.corleone.service.iautos.detail.IautosDetailCallback;
 import pp.corleone.service.iautos.detail.IautosDetailFetcher;
 
@@ -42,17 +42,23 @@ public class IautosListCallback extends Callback {
 		Elements liCars = doc.select("div.carShow>ul>li");
 
 		IautosDetailCallback detailCallback = new IautosDetailCallback();
+
+		IautosCarInfo ici = (IautosCarInfo) this.getResponseWrapper()
+				.getReferRequestWrapper().getContext()
+				.get(IautosConstant.CAR_INFO);
+
 		for (Element liCar : liCars) {
 			Element aCar = liCar.select("h4>a").first();
 			String detailUrl = aCar.attr("href");
 
 			RequestWrapper requestWrapper = new RequestWrapper(detailUrl,
-					detailCallback);
-
-			requestWrapper.getMeta().put(IautosListCallback.CONTEXT_KEY_CITY,
-					this.getCityName());
+					detailCallback, this.getResponseWrapper()
+							.getReferRequestWrapper());
+			requestWrapper.getContext().put(IautosConstant.CAR_INFO,
+					ici.clone());
 			Fetcher fetcher = new IautosDetailFetcher(requestWrapper);
 			fetchers.add(fetcher);
+//			break;
 		}
 
 		Elements div_page = doc.select("div.page");
@@ -61,13 +67,11 @@ public class IautosListCallback extends Callback {
 		if (null != nextPageATags && nextPageATags.size() > 0) {
 			Element nextPageATag = nextPageATags.get(0);
 			String href = nextPageATag.attr("href");
-
 			String nextUrl = IautosConstant.searchPage + href;
 			this.getLogger().info("get next page " + nextUrl);
-
-			RequestWrapper requestWrapper = new RequestWrapper(nextUrl, this);
-			requestWrapper.getMeta().put(IautosListCallback.CONTEXT_KEY_CITY,
-					this.getCityName());
+			RequestWrapper requestWrapper = new RequestWrapper(nextUrl, this,
+					this.getResponseWrapper().getReferRequestWrapper());
+			requestWrapper.getContext().put(IautosConstant.CAR_INFO, ici);
 			Fetcher fetcher = new IautosListFetcher(requestWrapper);
 			fetchers.add(fetcher);
 		} else {

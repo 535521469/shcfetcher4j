@@ -35,8 +35,20 @@ public class FetcherThread extends Thread {
 					continue;
 				}
 
-				getLogger().debug(
-						"fetch " + fetcher.getRequestWrapper().getUrl());
+				if (fetcher.getRequestWrapper().getReferRequestWrappers()
+						.size() > 0) {
+
+					getLogger().debug(
+							"fetch "
+									+ fetcher.getRequestWrapper().getUrl()
+									+ " [ refer to "
+									+ fetcher.getRequestWrapper()
+											.getReferRequestWrappers().get(0)
+											.getUrl() + " ]");
+				} else {
+					getLogger().debug(
+							"fetch " + fetcher.getRequestWrapper().getUrl());
+				}
 
 				Future<ResponseWrapper> fu = pe.submit(fetcher);
 				try {
@@ -65,5 +77,4 @@ public class FetcherThread extends Thread {
 		// System.out.println("............");
 
 	}
-
 }
