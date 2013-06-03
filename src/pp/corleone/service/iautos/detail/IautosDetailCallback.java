@@ -31,9 +31,13 @@ public class IautosDetailCallback extends Callback {
 	private IautosCarInfoDao carDao;
 
 	public IautosDetailCallback() {
-		Session session = DaoUtil.getCurrentSession();
+		Session session = this.getSession();
 		this.setSellerDao(new IautosSellerInfoDao(session));
 		this.setCarDao(new IautosCarInfoDao(session));
+	}
+
+	public Session getSession() {
+		return DaoUtil.getSessionFactory().openSession();
 	}
 
 	public IautosSellerInfoDao getSellerDao() {
@@ -61,7 +65,8 @@ public class IautosDetailCallback extends Callback {
 	private Fetcher getSellerFetcher(Element ele) {
 
 		String shopUrl = null;
-		Element aTag = ele.select("div>a").first();
+		Elements aTags = ele.select("div>a");
+		Element aTag = aTags.first();
 		shopUrl = aTag.attr("href");
 		Callback sellerCallback = new IautosSellerCallback();
 		RequestWrapper requestWrapper = new RequestWrapper(shopUrl,
@@ -131,55 +136,60 @@ public class IautosDetailCallback extends Callback {
 		IautosCarInfo ici = (IautosCarInfo) this.getResponseWrapper()
 				.getContext().get(IautosConstant.CAR_INFO);
 
-		Transaction tx = DaoUtil.getCurrentSession().beginTransaction();
+		Transaction tx = this.getSession().beginTransaction();
+		try {
+			if (IautosCarInfo.SELLER_TYPE_SHOP == ici.getSellerType()) {
+				IautosSellerInfo isi = null;
+				Element divTag = doc.select("div.box2>div.pjzl").first();
 
-		if (IautosCarInfo.SELLER_TYPE_SHOP == ici.getSellerType()) {
-			IautosSellerInfo isi = null;
-			Element divTag = doc.select("div.box2>div.pjzl").first();
-			// get shop fetcher
-			Fetcher sellerFetcher = this.getSellerFetcher(divTag);
-			// get shop url
-			String shopUrl = sellerFetcher.getRequestWrapper().getUrl();
+				if (divTag != null) {
+					// check if shop is exist
 
-			if (null != shopUrl) {
-				// check if shop is exist
+					// get shop fetcher
+					Fetcher sellerFetcher = this.getSellerFetcher(divTag);
+					// get shop url
+					String shopUrl = sellerFetcher.getRequestWrapper().getUrl();
 
-				// set seller url
-				ici.setShopUrl(shopUrl);
+					// set seller url
+					ici.setShopUrl(shopUrl);
 
-				isi = this.getSellerDao().getByShopUrl(shopUrl);
+					isi = this.getSellerDao().getByShopUrl(shopUrl);
 
-				if (null != isi) {
-					// if shop exist
-					getLogger().debug(
-							"shop already exist " + isi.getSeqID() + ","
-									+ isi.getShopUrl());
+					if (null != isi) {
+						// if shop exist
+						getLogger().debug(
+								"shop already exist " + isi.getSeqID() + ","
+										+ isi.getShopUrl());
+					} else {
+						// add shop fetcher
+						fetchers.add(sellerFetcher);
+
+						isi = new IautosSellerInfo();
+						isi.setShopUrl(ici.getShopUrl());
+
+						// save to db
+						this.getSellerDao().addShopInfo(isi);
+					}
+
+					// set shop
+					ici.setIautosSellerInfo(isi);
+
 				} else {
-					// add shop fetcher
-					fetchers.add(sellerFetcher);
-
-					isi = new IautosSellerInfo();
-					isi.setShopUrl(ici.getShopUrl());
-
-					// save to db
-					this.getSellerDao().addShopInfo(isi);
+					getLogger().warn(
+							"shop url is null ,"
+									+ this.getResponseWrapper().getUrl());
 				}
-
-				// set shop
-				ici.setIautosSellerInfo(isi);
-
-			} else {
-				getLogger().warn(
-						"shop url is null ,"
-								+ this.getResponseWrapper().getUrl());
 			}
+
+			this.getDetailItem(doc, ici);
+			// this.getCarDao().addCarInfo(ici);
+			this.getCarDao().addCarInfo(ici, this.getSession());
+
+			tx.commit();
+		} catch (Exception e) {
+			tx.rollback();
+			e.printStackTrace();
 		}
-
-		this.getDetailItem(doc, ici);
-		// this.getCarDao().addCarInfo(ici);
-		this.getCarDao().addCarInfo(ici, DaoUtil.getCurrentSession());
-
-		tx.commit();
 
 		return fetched;
 

@@ -16,6 +16,7 @@ public class IautosCarInfoDao {
 	public Session getSession() {
 		return session;
 	}
+
 	public void setSession(Session session) {
 		this.session = session;
 	}
@@ -28,8 +29,20 @@ public class IautosCarInfoDao {
 		return carInfo;
 	}
 
+	public IautosCarInfo getByCarUrl(String sourceUrl) {
+		Query query = this.getSession().createQuery(
+				"from IautosCarInfo where sourceUrl=:sourceUrl");
+		query.setString("sourceUrl", sourceUrl);
+		IautosCarInfo carInfo = (IautosCarInfo) query.uniqueResult();
+		return carInfo;
+	}
+
 	public void addCarInfo(IautosCarInfo ici, Session session) {
 		session.save(ici);
+	}
+
+	public void addCarInfo(IautosCarInfo ici) {
+		this.getSession().save(ici);
 	}
 
 }

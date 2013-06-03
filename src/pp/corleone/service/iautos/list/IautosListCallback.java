@@ -58,7 +58,7 @@ public class IautosListCallback extends Callback {
 					ici.clone());
 			Fetcher fetcher = new IautosDetailFetcher(requestWrapper);
 			fetchers.add(fetcher);
-//			break;
+			break;
 		}
 
 		Elements div_page = doc.select("div.page");
@@ -71,9 +71,9 @@ public class IautosListCallback extends Callback {
 			this.getLogger().info("get next page " + nextUrl);
 			RequestWrapper requestWrapper = new RequestWrapper(nextUrl, this,
 					this.getResponseWrapper().getReferRequestWrapper());
-			requestWrapper.getContext().put(IautosConstant.CAR_INFO, ici);
+			requestWrapper.getContext().put(IautosConstant.CAR_INFO, ici.clone());
 			Fetcher fetcher = new IautosListFetcher(requestWrapper);
-			fetchers.add(fetcher);
+//			fetchers.add(fetcher);
 		} else {
 			this.getLogger().info(this.getCityName() + " rearch last page ");
 		}

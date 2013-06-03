@@ -1,34 +1,38 @@
 delimiter $$
 
+create database SecondhandCar_Fundamental;
+$$
+use SecondhandCar_Fundamental;
 
+$$
 CREATE TABLE `CarInfo_Iautos` (
-  `SEQID` varchar(32) NOT NULL COMMENT 'è®°å½•ID',
-  `CityName` varchar(64) DEFAULT NULL COMMENT 'æ‰€å±åŸå¸‚',
-  `SourceType` varchar(512) NOT NULL COMMENT 'æ•°æ®æ¥æº',
-  `StatusType` int(11) DEFAULT NULL COMMENT 'çŠ¶æ€|1:ä»£å”®;2:å·²å”®;4:é€¾æœŸ',
-  `Title` varchar(512) DEFAULT NULL COMMENT 'æ–‡ç« æ ‡é¢˜',
-  `DeclareDate` date DEFAULT NULL COMMENT 'å‘å¸ƒæ—¥æœŸ',
-  `FetchDateTime` datetime DEFAULT NULL COMMENT 'æŠ“å–æ—¶é—´',
-  `LastActiveDateTime` datetime DEFAULT NULL COMMENT 'æœ€åç¡®è®¤æœ‰æ•ˆæ—¶é—´',
-  `OffLineDateTime` datetime DEFAULT NULL COMMENT 'ç¡®è®¤ä¸‹çº¿æ—¶é—´',
-  `SourceUrl` varchar(128) DEFAULT NULL COMMENT 'åŸå§‹é“¾æ¥',
-  `SellerID` varchar(32) DEFAULT NULL COMMENT 'å–å®¶ID',
-  `CarSourceType` int(11) DEFAULT NULL COMMENT 'å–å®¶ç±»å‹|1:å•†æˆ·;2:ä¸ªäºº',
-  `Price` varchar(32) DEFAULT NULL COMMENT 'ä»·æ ¼',
-  `CarType` varchar(512) DEFAULT NULL COMMENT 'è½¦è¾†ç±»å‹',
-  `Contacter` varchar(512) DEFAULT NULL COMMENT 'è”ç³»äºº',
-  `ContacterURL` varchar(512) DEFAULT NULL COMMENT 'è”ç³»äººé“¾æ¥',
-  `ContacterPhone` varchar(32) DEFAULT NULL COMMENT 'è”ç³»äººç”µè¯',
-  `CarColor` varchar(512) DEFAULT NULL COMMENT 'è½¦è¾†é¢œè‰²',
-  `RoadHaul` varchar(512) DEFAULT NULL COMMENT 'è¡Œé©¶é‡Œç¨‹',
-  `Displacement` varchar(512) DEFAULT NULL COMMENT 'æ’é‡',
-  `Gearbox` varchar(512) DEFAULT NULL COMMENT 'å˜é€Ÿç®±',
-  `LicenseDate` varchar(512) DEFAULT NULL COMMENT 'ä¸Šç‰Œæ—¶é—´',
-  `MTime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'æœ€åæ›´æ–°æ—¶é—´',
-  `CTime` datetime DEFAULT NULL COMMENT 'åˆ›å»ºæ—¶é—´',
+  `SEQID` varchar(32) NOT NULL COMMENT '¼ÇÂ¼ID',
+  `CityName` varchar(64) DEFAULT NULL COMMENT 'ËùÊô³ÇÊĞ',
+  `SourceType` varchar(512) NOT NULL COMMENT 'Êı¾İÀ´Ô´',
+  `StatusType` int(11) DEFAULT NULL COMMENT '×´Ì¬|1:´úÊÛ;2:ÒÑÊÛ;4:ÓâÆÚ',
+  `Title` varchar(512) DEFAULT NULL COMMENT 'ÎÄÕÂ±êÌâ',
+  `DeclareDate` date DEFAULT NULL COMMENT '·¢²¼ÈÕÆÚ',
+  `FetchDateTime` datetime DEFAULT NULL COMMENT '×¥È¡Ê±¼ä',
+  `LastActiveDateTime` datetime DEFAULT NULL COMMENT '×îºóÈ·ÈÏÓĞĞ§Ê±¼ä',
+  `OffLineDateTime` datetime DEFAULT NULL COMMENT 'È·ÈÏÏÂÏßÊ±¼ä',
+  `SourceUrl` varchar(128) DEFAULT NULL COMMENT 'Ô­Ê¼Á´½Ó',
+  `SellerID` varchar(32) DEFAULT NULL COMMENT 'Âô¼ÒID',
+  `CarSourceType` int(11) DEFAULT NULL COMMENT 'Âô¼ÒÀàĞÍ|1:ÉÌ»§;2:¸öÈË',
+  `Price` varchar(32) DEFAULT NULL COMMENT '¼Û¸ñ',
+  `CarType` varchar(512) DEFAULT NULL COMMENT '³µÁ¾ÀàĞÍ',
+  `Contacter` varchar(512) DEFAULT NULL COMMENT 'ÁªÏµÈË',
+  `ContacterURL` varchar(512) DEFAULT NULL COMMENT 'ÁªÏµÈËÁ´½Ó',
+  `ContacterPhone` varchar(32) DEFAULT NULL COMMENT 'ÁªÏµÈËµç»°',
+  `CarColor` varchar(512) DEFAULT NULL COMMENT '³µÁ¾ÑÕÉ«',
+  `RoadHaul` varchar(512) DEFAULT NULL COMMENT 'ĞĞÊ»Àï³Ì',
+  `Displacement` varchar(512) DEFAULT NULL COMMENT 'ÅÅÁ¿',
+  `Gearbox` varchar(512) DEFAULT NULL COMMENT '±äËÙÏä',
+  `LicenseDate` varchar(512) DEFAULT NULL COMMENT 'ÉÏÅÆÊ±¼ä',
+  `MTime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '×îºó¸üĞÂÊ±¼ä',
+  `CTime` datetime DEFAULT NULL COMMENT '´´½¨Ê±¼ä',
   PRIMARY KEY (`SEQID`),
   UNIQUE KEY `SourceUrl` (`SourceUrl`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='è½¦è¾†ä¿¡æ¯'$$
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='³µÁ¾ĞÅÏ¢'$$
 
 CREATE
 TRIGGER `SecondhandCar_Fundamental`.`CTIME_INSERT_BEFORE_CarInfo_Iautos`
@@ -41,17 +45,17 @@ $$
 
 
 CREATE TABLE `SellerInfo_Iautos` (
-  `SEQID` varchar(32) NOT NULL COMMENT 'è®°å½•ID',
-  `SellerName` varchar(128) DEFAULT NULL COMMENT 'å–å®¶å',
-  `SellerAddress` varchar(128) DEFAULT NULL COMMENT 'å–å®¶åœ°å€',
-  `SellerPhone` varchar(32) DEFAULT NULL COMMENT 'å–å®¶ç”µè¯',
-  `EnterDate` date DEFAULT NULL COMMENT 'å…¥é©»æ—¶é—´',
-  `SellerUrl` varchar(256) DEFAULT NULL COMMENT 'å–å®¶åŸå§‹é“¾æ¥',
-  `MTime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'æœ€åæ›´æ–°æ—¶é—´',
-  `CTime` datetime DEFAULT NULL COMMENT 'åˆ›å»ºæ—¶é—´',
+  `SEQID` varchar(32) NOT NULL COMMENT '¼ÇÂ¼ID',
+  `SellerName` varchar(128) DEFAULT NULL COMMENT 'Âô¼ÒÃû',
+  `SellerAddress` varchar(128) DEFAULT NULL COMMENT 'Âô¼ÒµØÖ·',
+  `SellerPhone` varchar(32) DEFAULT NULL COMMENT 'Âô¼Òµç»°',
+  `EnterDate` date DEFAULT NULL COMMENT 'Èë×¤Ê±¼ä',
+  `SellerUrl` varchar(256) DEFAULT NULL COMMENT 'Âô¼ÒÔ­Ê¼Á´½Ó',
+  `MTime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '×îºó¸üĞÂÊ±¼ä',
+  `CTime` datetime DEFAULT NULL COMMENT '´´½¨Ê±¼ä',
   PRIMARY KEY (`SEQID`),
   KEY `idx_SellerUrl` (`SellerUrl`(255))
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='å–å®¶ä¿¡æ¯'$$
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Âô¼ÒĞÅÏ¢'$$
 
 
 CREATE
@@ -62,4 +66,3 @@ BEGIN
 SET NEW.CTIME = NOW();
 END
 $$
-
