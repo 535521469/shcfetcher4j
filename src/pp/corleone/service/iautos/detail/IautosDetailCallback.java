@@ -37,7 +37,7 @@ public class IautosDetailCallback extends Callback {
 	}
 
 	public Session getSession() {
-		return DaoUtil.getSessionFactory().openSession();
+		return DaoUtil.getCurrentSession();
 	}
 
 	public IautosSellerInfoDao getSellerDao() {
@@ -136,6 +136,8 @@ public class IautosDetailCallback extends Callback {
 		IautosCarInfo ici = (IautosCarInfo) this.getResponseWrapper()
 				.getContext().get(IautosConstant.CAR_INFO);
 
+		ici.setCarSourceUrl(this.getResponseWrapper().getUrl());
+
 		Transaction tx = this.getSession().beginTransaction();
 		try {
 			if (IautosCarInfo.SELLER_TYPE_SHOP == ici.getSellerType()) {
@@ -153,7 +155,8 @@ public class IautosDetailCallback extends Callback {
 					// set seller url
 					ici.setShopUrl(shopUrl);
 
-					isi = this.getSellerDao().getByShopUrl(shopUrl);
+					isi = this.getSellerDao().getByShopUrl(shopUrl,
+							this.getSession());
 
 					if (null != isi) {
 						// if shop exist
@@ -168,7 +171,7 @@ public class IautosDetailCallback extends Callback {
 						isi.setShopUrl(ici.getShopUrl());
 
 						// save to db
-						this.getSellerDao().addShopInfo(isi);
+						this.getSellerDao().addShopInfo(isi, this.getSession());
 					}
 
 					// set shop

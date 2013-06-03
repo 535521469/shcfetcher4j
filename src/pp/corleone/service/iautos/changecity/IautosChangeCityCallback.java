@@ -130,7 +130,6 @@ public class IautosChangeCityCallback extends Callback {
 						IautosCarInfo.SELLER_TYPE_SHOP, listCallback);
 				fetchers.add(cityShop);// city shop
 				this.getLogger().debug("shop " + cityName + ":" + cityShopUrl);
-				System.out.println(((IautosCarInfo)cityShop.getRequestWrapper().getContext().get(IautosConstant.CAR_INFO)).getSellerType());;
 			}
 		}
 

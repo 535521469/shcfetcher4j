@@ -18,6 +18,8 @@
 
 	<union-subclass name="pp.corleone.domain.iautos.IautosSellerInfo"
 		table="SellerInfo_Iautos" extends="pp.corleone.domain.SellerInfo">
+
+
 	</union-subclass>
 
 </hibernate-mapping>

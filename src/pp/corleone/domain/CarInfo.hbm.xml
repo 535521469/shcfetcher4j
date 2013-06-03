@@ -29,13 +29,19 @@
 		<property name="fetchDate" column="FetchDateTime"></property>
 		<property name="title" column="Title"></property>
 		<property name="statusType" column="StatusType"></property>
-		<property name="sellerID" column="SellerID"></property>
+		<!-- <property name="sellerID" column="SellerID"></property> -->
 
 	</class>
 
 	<union-subclass name="pp.corleone.domain.iautos.IautosCarInfo"
 		table="CarInfo_Iautos" extends="pp.corleone.domain.CarInfo">
 		<property name="shopUrl" column="ContacterURL"></property>
+
+		<many-to-one column="sellerID" name="iautosSellerInfo"
+			class="pp.corleone.domain.iautos.IautosSellerInfo" cascade="save-update"
+			not-null="false" lazy="false">
+		</many-to-one>
+
 	</union-subclass>
 
 

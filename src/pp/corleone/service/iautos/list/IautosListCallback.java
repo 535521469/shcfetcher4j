@@ -47,6 +47,8 @@ public class IautosListCallback extends Callback {
 				.getReferRequestWrapper().getContext()
 				.get(IautosConstant.CAR_INFO);
 
+		getLogger().debug(
+				"begin............" + this.getResponseWrapper().getUrl());
 		for (Element liCar : liCars) {
 			Element aCar = liCar.select("h4>a").first();
 			String detailUrl = aCar.attr("href");
@@ -58,8 +60,11 @@ public class IautosListCallback extends Callback {
 					ici.clone());
 			Fetcher fetcher = new IautosDetailFetcher(requestWrapper);
 			fetchers.add(fetcher);
-			break;
+			// break;
+
+			getLogger().debug("get detail " + detailUrl + "...........");
 		}
+		getLogger().debug("begin............");
 
 		Elements div_page = doc.select("div.page");
 
@@ -71,9 +76,10 @@ public class IautosListCallback extends Callback {
 			this.getLogger().info("get next page " + nextUrl);
 			RequestWrapper requestWrapper = new RequestWrapper(nextUrl, this,
 					this.getResponseWrapper().getReferRequestWrapper());
-			requestWrapper.getContext().put(IautosConstant.CAR_INFO, ici.clone());
+			requestWrapper.getContext().put(IautosConstant.CAR_INFO,
+					ici.clone());
 			Fetcher fetcher = new IautosListFetcher(requestWrapper);
-//			fetchers.add(fetcher);
+			fetchers.add(fetcher);
 		} else {
 			this.getLogger().info(this.getCityName() + " rearch last page ");
 		}
