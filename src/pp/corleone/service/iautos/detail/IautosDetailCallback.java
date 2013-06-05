@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.jsoup.nodes.Document;
@@ -17,11 +18,11 @@ import pp.corleone.dao.iautos.IautosCarInfoDao;
 import pp.corleone.dao.iautos.IautosSellerInfoDao;
 import pp.corleone.domain.iautos.FetcherConstants;
 import pp.corleone.domain.iautos.IautosCarInfo;
-import pp.corleone.domain.iautos.IautosConstant;
 import pp.corleone.domain.iautos.IautosSellerInfo;
 import pp.corleone.service.Callback;
 import pp.corleone.service.Fetcher;
 import pp.corleone.service.RequestWrapper;
+import pp.corleone.service.iautos.IautosConstant;
 import pp.corleone.service.iautos.seller.IautosSellerCallback;
 import pp.corleone.service.iautos.seller.IautosSellerFetcher;
 
@@ -78,57 +79,138 @@ public class IautosDetailCallback extends Callback {
 
 	private void getDetailItem(Element doc, IautosCarInfo ici) {
 
-		Element ele = doc.select("#car_detail").first();
+		Element detailDivTag = doc.select("#car_detail").first();
 
-		Element titleSpan = ele.select("div>span.span1").first();
-		Element statusTypeSpan = ele.select("div>span.span2").first();
-		Element detailDivTag = ele.select("div.div1").first();
+		this.fillContacterAndPhone(doc, ici);
 
-		if (detailDivTag == null) {
-			detailDivTag = ele.select("div.div4").first();
-		}
+		this.fillPriceAndStatus(detailDivTag, ici);
+		this.fillTitle(detailDivTag, ici);
+		this.fillDisplacementAndGearbox(detailDivTag, ici);
 
-		Element carStyleATag = detailDivTag.select("div").get(0)
-				.select("span>a[target=_blank]").first(); // style
-		Element priceFontTag = detailDivTag.select("div").get(2)
-				.select("span>font").first();
-		Element pTag = detailDivTag.select("p").get(0);
-		Element displacementATag = pTag.select("a").get(0);
-		Element gearboxATag = pTag.select("a").get(1);
-		Element seeCarAddressPTag = detailDivTag.select("p").get(1);
-		Element basicTableTag = doc.select("table.parameter").first();
-		Elements basicTrTags = basicTableTag.select("tr");
-		Element carTypeATag = basicTrTags.get(2).select("td").get(0)
-				.select("a").first(); // pin pai
-		Element roadHaulTdTag = basicTrTags.get(5).select("td").first();
-		Element colorTdTag = basicTrTags.get(6).select("td").get(1);
-
-		Element contacterPhoneDivTag = doc.select("div.div2_tel").first();
-
-		ici.setTitle(titleSpan.text());
-		ici.setPrice(priceFontTag.text());
-		ici.setDisplacement(displacementATag.text());
-		ici.setGearbox(gearboxATag.text());
-		ici.setCarType(carTypeATag.text());
-		ici.setRoadHaul(roadHaulTdTag.text());
-		ici.setColor(colorTdTag.text());
-
-		if (statusTypeSpan.text() == priceFontTag.text()) {
-			ici.setStatusType(IautosCarInfo.STATUS_TYPE_FOR_SALE);
-		} else if ("\u5DF2\u552E".equals(statusTypeSpan.text().trim())) {
-			// sold
-			ici.setStatusType(IautosCarInfo.STATUS_TYPE_SOLD);
-		} else if ("\u903E\u671F".equals(statusTypeSpan.text().trim())) {
-			// overdue
-			ici.setStatusType(IautosCarInfo.STATUS_TYPE_OVERDUE);
-		}
+		Element parameterTableTag = doc.select("table.parameter").first();
+		this.fillParameters(parameterTableTag, ici);
 
 		Date now = new Date();
 		ici.setFetchDate(now);
 		ici.setLastActiveDate(now);
 
-		ici.setContacterPhone(contacterPhoneDivTag.text());
+	}
 
+	private void fillContacterAndPhone(Element doc, IautosCarInfo ici) {
+		Element contacterPhoneDivTag = doc.select("div.div2_tel").first();
+
+		String contacterAndPhone = contacterPhoneDivTag.text();
+
+		// \uFF1A : colon , fen hao
+		String[] contacterAndPhoneArray = contacterAndPhone.split("\uFF1A");
+		if (contacterAndPhoneArray.length > 1) {
+			ici.setContacter(contacterAndPhoneArray[0]);
+			ici.setContacterPhone(contacterAndPhoneArray[1]);
+		} else {
+			ici.setContacterPhone(contacterAndPhone);
+		}
+	}
+
+	private void fillParameters(Element parameters, IautosCarInfo ici) {
+		Element parameterTag = parameters.select("table.parameter").first();
+		Elements basicTrTags = parameterTag.select("tr");
+		Element carTypeATag = basicTrTags.get(2).select("td").get(0)
+				.select("a").first(); // pin pai
+		Element roadHaulTdTag = basicTrTags.get(5).select("td").first();
+		Element colorTdTag = basicTrTags.get(6).select("td").get(1);
+
+		ici.setCarType(carTypeATag.text());
+
+		// \u884C\u9A76\u91CC\u7A0B\uFF1A : xing shi li cheng
+		String roadHaul = StringUtils.replace(roadHaulTdTag.text(),
+				"\u884C\u9A76\u91CC\u7A0B\uFF1A", "");
+		// \u516C\u91CC : kilometer , gong li
+		roadHaul = StringUtils.replace(roadHaul, "\u516C\u91CC", "");
+		ici.setRoadHaul(roadHaul);
+
+		// \u8F66\u8EAB\u989C\u8272\uFF1A : che shen yan se
+		// \uFF0C : Chinese comma
+		String color = StringUtils.replace(colorTdTag.text(),
+				"\u8F66\u8EAB\u989C\u8272\uFF1A", "").split("\uFF0C")[0];
+		ici.setColor(color);
+
+	}
+
+	private void fillTitle(Element detail, IautosCarInfo ici) {
+		Element titleSpan = detail.select("div>span.span1").first();
+		ici.setTitle(titleSpan.text());
+	}
+
+	private void fillDisplacementAndGearbox(Element detail, IautosCarInfo ici) {
+		Element detailDivTag = detail.select("div.div1").first();
+		Element displacementATag = null;
+		Element gearboxATag = null;
+		if (detailDivTag == null) {
+			detailDivTag = detail.select("div.div4").first();
+			Element divTag = detailDivTag.select(">div").get(3);
+			Element spanTag = divTag.select("span").get(0);
+
+			Elements aTags = spanTag.select("a");
+			displacementATag = aTags.get(0);
+			gearboxATag = aTags.get(1);
+		} else {
+			Elements aTags = detailDivTag.select("p>a");
+			displacementATag = aTags.get(0);
+			gearboxATag = aTags.get(1);
+		}
+		if (displacementATag != null) {
+			ici.setDisplacement(displacementATag.text());
+		} else {
+			throw new IllegalArgumentException("Displacement");
+		}
+		if (gearboxATag != null) {
+			ici.setGearbox(gearboxATag.text());
+		} else {
+			throw new IllegalArgumentException("Gearbox");
+		}
+	}
+
+	private void fillPriceAndStatus(Element detail, IautosCarInfo ici) {
+		Element detailDivTag = detail.select("div.div1").first();
+		Element priceFontTag = null;
+		if (detailDivTag == null) {
+			detailDivTag = detail.select("div.div4").first();
+			Element divTag = detailDivTag.select(">div").get(1);
+			Element spanTag = divTag.select("span").get(0);
+
+			Elements fontTags = spanTag.select("font");
+			priceFontTag = fontTags.get(0);
+		} else {
+			Elements aTags = detailDivTag.select("p>a");
+			priceFontTag = aTags.get(0);
+		}
+		if (priceFontTag != null) {
+			ici.setPrice(priceFontTag.text());
+		} else {
+			throw new IllegalArgumentException("Price");
+		}
+
+		Element statusSpanTag = null;
+		statusSpanTag = detail.select(">div>span.span2").first();
+		String status = statusSpanTag.text().trim();
+		if (status.length() == 0) {
+			throw new IllegalArgumentException("StatusType is blank");
+		}
+		if (status == ici.getPrice()) {
+			ici.setStatusType(IautosCarInfo.STATUS_TYPE_FOR_SALE);
+		} else if ("\u5DF2\u552E".equals(status)) {
+			// sold yi shou
+			ici.setStatusType(IautosCarInfo.STATUS_TYPE_SOLD);
+		} else if ("\u903E\u671F".equals(status)) {
+			// overdue yu qi
+			ici.setStatusType(IautosCarInfo.STATUS_TYPE_OVERDUE);
+		} else {
+			throw new IllegalArgumentException("StatusType is out of control"
+					+ status);
+		}
+	}
+
+	private void fillWatchAddress(Element doc, IautosCarInfo ici) {
 	}
 
 	@Override

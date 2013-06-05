@@ -12,10 +12,10 @@ import org.jsoup.select.Elements;
 
 import pp.corleone.domain.iautos.FetcherConstants;
 import pp.corleone.domain.iautos.IautosCarInfo;
-import pp.corleone.domain.iautos.IautosConstant;
 import pp.corleone.service.Callback;
 import pp.corleone.service.Fetcher;
 import pp.corleone.service.RequestWrapper;
+import pp.corleone.service.iautos.IautosConstant;
 import pp.corleone.service.iautos.list.IautosListCallback;
 import pp.corleone.service.iautos.list.IautosListFetcher;
 

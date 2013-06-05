@@ -12,7 +12,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import pp.corleone.domain.iautos.ConfigConstant;
-import pp.corleone.domain.iautos.IautosConstant;
 import pp.corleone.service.Callback;
 import pp.corleone.service.Fetcher;
 import pp.corleone.service.RequestWrapper;

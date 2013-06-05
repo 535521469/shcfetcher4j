@@ -17,10 +17,10 @@ import org.jsoup.select.Elements;
 
 import pp.corleone.domain.iautos.FetcherConstants;
 import pp.corleone.domain.iautos.IautosCarInfo;
-import pp.corleone.domain.iautos.IautosConstant;
 import pp.corleone.service.Callback;
 import pp.corleone.service.Fetcher;
 import pp.corleone.service.RequestWrapper;
+import pp.corleone.service.iautos.IautosConstant;
 import pp.corleone.service.iautos.detail.IautosDetailCallback;
 import pp.corleone.service.iautos.detail.IautosDetailFetcher;
 
@@ -43,14 +43,15 @@ public class IautosListCallback extends Callback {
 		if (ddTags.size() > 0) {
 			String declareDateStr = ddTags.first().text();
 
-			if (declareDateStr.indexOf("Ç°") == -1) {
+			if (declareDateStr.indexOf("\u524D") == -1) {
+				// \u524D = qian / (before)
 				// find the word means it's able to format
 
 				DateFormat format1 = new SimpleDateFormat(
 						"EEE MMM dd HH:mm:ss zzz yyyy", Locale.US);
 				try {
 					declareDate = format1.parse(declareDateStr);
-					getLogger().debug(declareDate + "¡°¡±¡°¡±¡°¡±¡°¡±¡°");
+					getLogger().debug(declareDate + "....." + declareDateStr);
 				} catch (ParseException e) {
 					e.printStackTrace();
 				}

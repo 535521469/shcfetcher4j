@@ -1,4 +1,4 @@
-package pp.corleone.domain.iautos;
+package pp.corleone.service.iautos;
 
 public class IautosConstant {
 

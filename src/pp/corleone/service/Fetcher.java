@@ -47,7 +47,12 @@ public abstract class Fetcher implements Callable<ResponseWrapper> {
 			}
 
 			return rw;
+		} else {
+			getLogger().info(
+					"ignore fetch " + this.getRequestWrapper().getUrl());
+			throw new InterruptedException("ignore fetch "
+					+ this.getRequestWrapper().getUrl());
 		}
-		throw new InterruptedException();
+
 	}
 }
