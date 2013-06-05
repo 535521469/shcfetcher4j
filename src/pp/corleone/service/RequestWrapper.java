@@ -50,14 +50,13 @@ public class RequestWrapper {
 	}
 
 	public RequestWrapper(String url, Callback callback) {
+		this(url);
 		this.setCallback(callback);
-		this.setUrl(url);
 	}
 
 	public RequestWrapper(String url, Callback callback,
 			RequestWrapper referRequestWarpper) {
-		this.setCallback(callback);
-		this.setUrl(url);
+		this(url, callback);
 		this.getReferRequestWrappers().add(referRequestWarpper);
 	}
 

@@ -27,23 +27,27 @@ public abstract class Fetcher implements Callable<ResponseWrapper> {
 		this.requestWrapper = requestWrapper;
 	}
 
-	@Override
-	public ResponseWrapper call() throws Exception {
-		String url = this.getRequestWrapper().getUrl();
-		ResponseWrapper rw = null;
-
-		try {
-
-			getLogger().debug("crawl " + url);
-
-			Document doc = Jsoup.connect(url).get();
-			return new ResponseWrapper(doc, this.requestWrapper);
-
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-
-		return rw;
+	public boolean isIgnore() {
+		return true;
 	}
 
+	@Override
+	public ResponseWrapper call() throws Exception {
+
+		if (this.isIgnore()) {
+
+			String url = this.getRequestWrapper().getUrl();
+			ResponseWrapper rw = null;
+			try {
+				getLogger().debug("crawl " + url);
+				Document doc = Jsoup.connect(url).get();
+				return new ResponseWrapper(doc, this.requestWrapper);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+
+			return rw;
+		}
+		throw new InterruptedException();
+	}
 }

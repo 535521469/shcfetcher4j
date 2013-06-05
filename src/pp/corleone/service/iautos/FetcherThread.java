@@ -26,7 +26,7 @@ public class FetcherThread extends Thread {
 
 		Fetcher fetcher = null;
 
-		while (true) {
+		while (!isInterrupted()) {
 			try {
 				fetcher = IautosResource.fetchQueue.poll(3000,
 						TimeUnit.MILLISECONDS);

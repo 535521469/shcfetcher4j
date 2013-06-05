@@ -140,48 +140,46 @@ public class IautosDetailCallback extends Callback {
 
 		Transaction tx = this.getSession().beginTransaction();
 		try {
-			if (IautosCarInfo.SELLER_TYPE_SHOP == ici.getSellerType()) {
-				IautosSellerInfo isi = null;
-				Element divTag = doc.select("div.box2>div.pjzl").first();
+			IautosSellerInfo isi = null;
+			Element divTag = doc.select("div.box2>div.pjzl").first();
 
-				if (divTag != null) {
-					// check if shop is exist
+			if (divTag != null) {
+				// check if shop is exist
 
-					// get shop fetcher
-					Fetcher sellerFetcher = this.getSellerFetcher(divTag);
-					// get shop url
-					String shopUrl = sellerFetcher.getRequestWrapper().getUrl();
+				// get shop fetcher
+				Fetcher sellerFetcher = this.getSellerFetcher(divTag);
+				// get shop url
+				String shopUrl = sellerFetcher.getRequestWrapper().getUrl();
 
-					// set seller url
-					ici.setShopUrl(shopUrl);
+				// set seller url
+				ici.setShopUrl(shopUrl);
 
-					isi = this.getSellerDao().getByShopUrl(shopUrl,
-							this.getSession());
+				isi = this.getSellerDao().getByShopUrl(shopUrl,
+						this.getSession());
 
-					if (null != isi) {
-						// if shop exist
-						getLogger().debug(
-								"shop already exist " + isi.getSeqID() + ","
-										+ isi.getShopUrl());
-					} else {
-						// add shop fetcher
-						fetchers.add(sellerFetcher);
-
-						isi = new IautosSellerInfo();
-						isi.setShopUrl(ici.getShopUrl());
-
-						// save to db
-						this.getSellerDao().addShopInfo(isi, this.getSession());
-					}
-
-					// set shop
-					ici.setIautosSellerInfo(isi);
-
+				if (null != isi) {
+					// if shop exist
+					getLogger().debug(
+							"shop already exist " + isi.getSeqID() + ","
+									+ isi.getShopUrl());
 				} else {
-					getLogger().warn(
-							"shop url is null ,"
-									+ this.getResponseWrapper().getUrl());
+					// add shop fetcher
+					fetchers.add(sellerFetcher);
+
+					isi = new IautosSellerInfo();
+					isi.setShopUrl(ici.getShopUrl());
+
+					// save to db
+					this.getSellerDao().addShopInfo(isi, this.getSession());
 				}
+
+				// set shop
+				ici.setIautosSellerInfo(isi);
+
+			} else {
+				getLogger().warn(
+						"shop url is null ,"
+								+ this.getResponseWrapper().getUrl());
 			}
 
 			this.getDetailItem(doc, ici);
