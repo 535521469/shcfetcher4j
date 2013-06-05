@@ -83,6 +83,11 @@ public class IautosDetailCallback extends Callback {
 		Element titleSpan = ele.select("div>span.span1").first();
 		Element statusTypeSpan = ele.select("div>span.span2").first();
 		Element detailDivTag = ele.select("div.div1").first();
+
+		if (detailDivTag == null) {
+			detailDivTag = ele.select("div.div4").first();
+		}
+
 		Element carStyleATag = detailDivTag.select("div").get(0)
 				.select("span>a[target=_blank]").first(); // style
 		Element priceFontTag = detailDivTag.select("div").get(2)

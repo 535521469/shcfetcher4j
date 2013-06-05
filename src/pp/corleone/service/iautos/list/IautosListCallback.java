@@ -1,8 +1,14 @@
 package pp.corleone.service.iautos.list;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 import org.jsoup.nodes.Document;
@@ -30,6 +36,31 @@ public class IautosListCallback extends Callback {
 	public IautosListCallback() {
 	}
 
+	private Date extractDeclareDate(Element liCar) {
+		Date declareDate = null;
+
+		Elements ddTags = liCar.select("dd.date");
+		if (ddTags.size() > 0) {
+			String declareDateStr = ddTags.first().text();
+
+			if (declareDateStr.indexOf("Ç°") == -1) {
+				// find the word means it's able to format
+
+				DateFormat format1 = new SimpleDateFormat(
+						"EEE MMM dd HH:mm:ss zzz yyyy", Locale.US);
+				try {
+					declareDate = format1.parse(declareDateStr);
+					getLogger().debug(declareDate + "¡°¡±¡°¡±¡°¡±¡°¡±¡°");
+				} catch (ParseException e) {
+					e.printStackTrace();
+				}
+			}
+
+		}
+
+		return declareDate;
+	}
+
 	@Override
 	public Map<String, Collection<?>> call() throws Exception {
 
@@ -47,8 +78,6 @@ public class IautosListCallback extends Callback {
 				.getReferRequestWrapper().getContext()
 				.get(IautosConstant.CAR_INFO);
 
-		getLogger().debug(
-				"begin............" + this.getResponseWrapper().getUrl());
 		for (Element liCar : liCars) {
 			Element aCar = liCar.select("h4>a").first();
 			String detailUrl = aCar.attr("href");
@@ -56,15 +85,20 @@ public class IautosListCallback extends Callback {
 			RequestWrapper requestWrapper = new RequestWrapper(detailUrl,
 					detailCallback, this.getResponseWrapper()
 							.getReferRequestWrapper());
-			requestWrapper.getContext().put(IautosConstant.CAR_INFO,
-					ici.clone());
+
+			IautosCarInfo newCarInfo = ici.clone();
+			newCarInfo.setCarSourceUrl(detailUrl);
+			newCarInfo.setDeclareDate(this.extractDeclareDate(liCar));
+
+			requestWrapper.getContext()
+					.put(IautosConstant.CAR_INFO, newCarInfo);
 			Fetcher fetcher = new IautosDetailFetcher(requestWrapper);
 			fetchers.add(fetcher);
 			// break;
 
-			getLogger().debug("get detail " + detailUrl + "...........");
+			getLogger()
+					.debug("get detail in list " + detailUrl + "...........");
 		}
-		getLogger().debug("begin............");
 
 		Elements div_page = doc.select("div.page");
 
