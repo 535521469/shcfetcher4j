@@ -25,7 +25,7 @@ public class ExtractThread extends Thread {
 	@Override
 	public void run() {
 
-		while (true) {
+		while (!isInterrupted()) {
 			Callback cb = IautosResource.extractQueue.poll();
 
 			if (null == cb) {
@@ -68,6 +68,11 @@ public class ExtractThread extends Thread {
 
 								offeredFlag = IautosResource.fetchQueue.offer(
 										fetcher, 500, TimeUnit.MILLISECONDS);
+
+								getLogger().debug(
+										"offer "
+												+ fetcher.getRequestWrapper()
+														.getUrl());
 
 							} while (!offeredFlag);
 

@@ -13,6 +13,24 @@ public class RequestWrapper {
 	private Map<String, Object> meta = new HashMap<String, Object>();
 	private Map<String, Object> context = new HashMap<String, Object>();
 
+	public String getLastRequestUrl() {
+		String url = null;
+		RequestWrapper requestWrapper = this.getLastReferRequestWrapper();
+		if (null != requestWrapper) {
+			url = requestWrapper.getUrl();
+		}
+		return url;
+	}
+
+	public RequestWrapper getLastReferRequestWrapper() {
+		if (null != this.getReferRequestWrappers()
+				&& this.getReferRequestWrappers().size() > 0) {
+			return this.getReferRequestWrappers().get(
+					this.getReferRequestWrappers().size() - 1);
+		}
+		return null;
+	}
+
 	public String getUrl() {
 		return url;
 	}
@@ -63,6 +81,7 @@ public class RequestWrapper {
 	private List<RequestWrapper> referRequestWrappers = new ArrayList<RequestWrapper>();
 
 	public List<RequestWrapper> getReferRequestWrappers() {
+
 		return referRequestWrappers;
 	}
 

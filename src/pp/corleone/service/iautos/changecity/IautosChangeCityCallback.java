@@ -41,6 +41,10 @@ public class IautosChangeCityCallback extends Callback {
 		ici.setSellerType(sellerType);
 		ici.setLocate(locate);
 
+		this.getLogger().debug(
+				" sellertype " + ici.getSellerType() + ";locate:"
+						+ ici.getLocate());
+
 		if (IautosCarInfo.SELLER_TYPE_PERSON == sellerType) {
 			RequestWrapper per = new RequestWrapper(url, listCallback, this
 					.getResponseWrapper().getReferRequestWrapper());
@@ -64,7 +68,6 @@ public class IautosChangeCityCallback extends Callback {
 
 		Elements provinceATags = doc.select("div.province>a[href]");
 
-		IautosListCallback listCallback = new IautosListCallback();
 
 		for (Element provinceATag : provinceATags) {
 			// \uFF1A is colon
@@ -78,30 +81,30 @@ public class IautosChangeCityCallback extends Callback {
 					String provinceUrl = IautosConstant.searchPage
 							+ provinceATag.attr("href".intern());
 
-					// get province personal url
-					String provincePerUrl = IautosConstant
-							.buildPersonalUrl(provinceUrl);
-
-					Fetcher provincePer = buildFetcher(provinceName,
-							provincePerUrl, IautosCarInfo.SELLER_TYPE_PERSON,
-							listCallback);
-
-					fetchers.add(provincePer);// person province
-					this.getLogger().debug(
-							"personal " + provinceName + ":" + provincePerUrl);
-
 					// get province shop url
 					String provinceShopUrl = IautosConstant
 							.buildShopUrl(provinceUrl);
 
 					Fetcher provinceShop = buildFetcher(provinceName,
 							provinceShopUrl, IautosCarInfo.SELLER_TYPE_SHOP,
-							listCallback);
+							new IautosListCallback());
 
 					fetchers.add(provinceShop);// shop
 												// province
 					this.getLogger().debug(
 							"shop " + provinceName + ":" + provinceShopUrl);
+
+					// get province personal url
+					String provincePerUrl = IautosConstant
+							.buildPersonalUrl(provinceUrl);
+
+					Fetcher provincePer = buildFetcher(provinceName,
+							provincePerUrl, IautosCarInfo.SELLER_TYPE_PERSON,
+							new IautosListCallback());
+
+					fetchers.add(provincePer);// person province
+					this.getLogger().debug(
+							"personal " + provinceName + ":" + provincePerUrl);
 				}
 			}
 		}
@@ -115,21 +118,26 @@ public class IautosChangeCityCallback extends Callback {
 				// get city url
 				String cityUrl = IautosConstant.searchPage
 						+ cityATag.attr("href".intern()).replace("city-", "");
+
+				String cityShopUrl = IautosConstant.buildShopUrl(cityUrl);
+
+				Fetcher cityShop = this.buildFetcher(cityName, cityShopUrl,
+						IautosCarInfo.SELLER_TYPE_SHOP, new IautosListCallback());
+				fetchers.add(cityShop);// city shop
+
 				// get city personal url
 				String cityPerUrl = IautosConstant.buildPersonalUrl(cityUrl);
 
 				Fetcher cityPer = this.buildFetcher(cityName, cityPerUrl,
-						IautosCarInfo.SELLER_TYPE_PERSON, listCallback);
+						IautosCarInfo.SELLER_TYPE_PERSON, new IautosListCallback());
 				fetchers.add(cityPer);// city person
-				this.getLogger().debug(
-						"personal " + cityName + ":" + cityPerUrl);
 
-				String cityShopUrl = IautosConstant.buildShopUrl(cityUrl);
-				
-				Fetcher cityShop = this.buildFetcher(cityName, cityShopUrl,
-						IautosCarInfo.SELLER_TYPE_SHOP, listCallback);
-				fetchers.add(cityShop);// city shop
-				this.getLogger().debug("shop " + cityName + ":" + cityShopUrl);
+				this.getLogger().debug(
+						"shop " + cityName + ":" + cityShopUrl + "..."
+								+ cityShop.getRequestWrapper().getUrl());
+				this.getLogger().debug(
+						"personal " + cityName + ":" + cityPerUrl + "..."
+								+ cityPer.getRequestWrapper().getUrl());
 			}
 		}
 

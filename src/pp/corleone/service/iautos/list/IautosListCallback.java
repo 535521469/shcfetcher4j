@@ -51,7 +51,6 @@ public class IautosListCallback extends Callback {
 						"EEE MMM dd HH:mm:ss zzz yyyy", Locale.US);
 				try {
 					declareDate = format1.parse(declareDateStr);
-					getLogger().debug(declareDate + "....." + declareDateStr);
 				} catch (ParseException e) {
 					e.printStackTrace();
 				}
@@ -79,6 +78,7 @@ public class IautosListCallback extends Callback {
 				.getReferRequestWrapper().getContext()
 				.get(IautosConstant.CAR_INFO);
 
+
 		for (Element liCar : liCars) {
 			Element aCar = liCar.select("h4>a").first();
 			String detailUrl = aCar.attr("href");
@@ -95,10 +95,11 @@ public class IautosListCallback extends Callback {
 					.put(IautosConstant.CAR_INFO, newCarInfo);
 			Fetcher fetcher = new IautosDetailFetcher(requestWrapper);
 			fetchers.add(fetcher);
-			// break;
+			getLogger().debug(
+					"get detail in list " + detailUrl + ",refer to "
+							+ this.getResponseWrapper().getUrl());
+//			break;
 
-			getLogger()
-					.debug("get detail in list " + detailUrl + "...........");
 		}
 
 		Elements div_page = doc.select("div.page");
@@ -114,10 +115,14 @@ public class IautosListCallback extends Callback {
 			requestWrapper.getContext().put(IautosConstant.CAR_INFO,
 					ici.clone());
 			Fetcher fetcher = new IautosListFetcher(requestWrapper);
-			fetchers.add(fetcher);
+			 fetchers.add(fetcher);
 		} else {
 			this.getLogger().info(this.getCityName() + " rearch last page ");
 		}
+
+		this.getLogger().info(
+				this.getCityName() + " end..."
+						+ this.getResponseWrapper().getUrl());
 
 		return fetched;
 

@@ -27,7 +27,7 @@ public class ResponseWrapper {
 
 	public void setReferRequestWrapper(RequestWrapper referRequestWrapper) {
 		this.referRequestWrapper = referRequestWrapper;
-		this.referRequestWrapper.getCallback().setResponseWrapper(this);
+//		this.referRequestWrapper.getCallback().setResponseWrapper(this);
 	}
 
 	public Document getDoc() {

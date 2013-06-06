@@ -9,12 +9,12 @@
 		<property name="connection.url">
 			jdbc:mysql://localhost:3306/SecondhandCar_Fundamental
 		</property>
-		<property name="connection.password">root</property>
+		<property name="connection.password">0.618</property>
 
 		<property name="connection.driver_class">
 			com.mysql.jdbc.Driver
 		</property>
-		<property name="connection.username">root</property>
+		<property name="connection.username">datatec</property>
 		<property name="dialect">
 			org.hibernate.dialect.MySQLDialect
 		</property>

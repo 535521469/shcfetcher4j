@@ -1,6 +1,9 @@
 package pp.corleone.service.iautos.detail;
 
+import java.text.DateFormat;
+import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -63,18 +66,21 @@ public class IautosDetailCallback extends Callback {
 	 * @param ele
 	 * @return
 	 */
-	private Fetcher getSellerFetcher(Element ele) {
-
-		String shopUrl = null;
-		Elements aTags = ele.select("div>a");
-		Element aTag = aTags.first();
-		shopUrl = aTag.attr("href");
+	private Fetcher getSellerFetcher(String shopUrl) {
 		Callback sellerCallback = new IautosSellerCallback();
 		RequestWrapper requestWrapper = new RequestWrapper(shopUrl,
 				sellerCallback, this.getResponseWrapper()
 						.getReferRequestWrapper());
 		Fetcher sellerFetcher = new IautosSellerFetcher(requestWrapper);
 		return sellerFetcher;
+	}
+
+	private String getSellerUrl(Element ele) {
+		String shopUrl = null;
+		Elements aTags = ele.select("div>a");
+		Element aTag = aTags.first();
+		shopUrl = aTag.attr("href");
+		return shopUrl;
 	}
 
 	private void getDetailItem(Element doc, IautosCarInfo ici) {
@@ -114,13 +120,14 @@ public class IautosDetailCallback extends Callback {
 	private void fillParameters(Element parameters, IautosCarInfo ici) {
 		Element parameterTag = parameters.select("table.parameter").first();
 		Elements basicTrTags = parameterTag.select("tr");
-		Element carTypeATag = basicTrTags.get(2).select("td").get(0)
-				.select("a").first(); // pin pai
-		Element roadHaulTdTag = basicTrTags.get(5).select("td").first();
-		Element colorTdTag = basicTrTags.get(6).select("td").get(1);
 
+		/* suo shu pin pai */
+		Element carTypeATag = basicTrTags.get(2).select("td").get(0)
+				.select("a").first(); // suo shu pin pai
 		ici.setCarType(carTypeATag.text());
 
+		/* xing shi li cheng */
+		Element roadHaulTdTag = basicTrTags.get(5).select("td").first();
 		// \u884C\u9A76\u91CC\u7A0B\uFF1A : xing shi li cheng
 		String roadHaul = StringUtils.replace(roadHaulTdTag.text(),
 				"\u884C\u9A76\u91CC\u7A0B\uFF1A", "");
@@ -128,11 +135,54 @@ public class IautosDetailCallback extends Callback {
 		roadHaul = StringUtils.replace(roadHaul, "\u516C\u91CC", "");
 		ici.setRoadHaul(roadHaul);
 
+		/* color */
+		Element colorTdTag = basicTrTags.get(6).select("td").get(1);
 		// \u8F66\u8EAB\u989C\u8272\uFF1A : che shen yan se
 		// \uFF0C : Chinese comma
 		String color = StringUtils.replace(colorTdTag.text(),
 				"\u8F66\u8EAB\u989C\u8272\uFF1A", "").split("\uFF0C")[0];
 		ici.setColor(color);
+
+		/* update date */
+		Element updateDateTdTag = basicTrTags.get(0).select("td").get(1);
+		// \u66F4\u65B0\u65F6\u95F4\uFF1A : update date and a chinese colon
+		String updateDateString = StringUtils.replace(updateDateTdTag.text(),
+				"\u66F4\u65B0\u65F6\u95F4\uFF1A", "");
+
+		try {
+			Date updateDate = DateFormat.getDateInstance(DateFormat.DATE_FIELD)
+					.parse(updateDateString);
+
+			if (ici.getDeclareDate() == null) {
+				ici.setDeclareDate(updateDate);
+			} else {
+				DateFormat df = DateFormat
+						.getDateInstance(DateFormat.DATE_FIELD);
+				if (!df.format(ici.getDeclareDate()).equals(
+						df.format(updateDate))) {
+					throw new IllegalArgumentException(
+							"update date is not equals declare date "
+									+ this.getResponseWrapper().getUrl()
+									+ " refer to :"
+									+ this.getResponseWrapper()
+											.getReferRequestWrapper()
+											.getLastRequestUrl() + "...."
+									+ ici.getDeclareDate() + updateDate);
+				}
+			}
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+
+		/* shang pai shi jian or chu deng ri qi */
+		Element licensedDateTdTagElement = basicTrTags.get(4).select("td")
+				.get(0);
+		// \u521D\u767B\u65E5\u671F\uFF1A : chu deng ri qi with an chinese colon
+
+		String licensedDateString = StringUtils.replace(
+				licensedDateTdTagElement.text(),
+				"\u521D\u767B\u65E5\u671F\uFF1A", "");
+		ici.setLicenseDate(licensedDateString);
 
 	}
 
@@ -181,8 +231,13 @@ public class IautosDetailCallback extends Callback {
 			Elements fontTags = spanTag.select("font");
 			priceFontTag = fontTags.get(0);
 		} else {
-			Elements aTags = detailDivTag.select("p>a");
-			priceFontTag = aTags.get(0);
+			Elements spanTags = detailDivTag.select("div>span");
+			for (Element spanTag : spanTags) {
+				// \u9884\u552E\u4EF7\u683C : price ; yu shou jia ge
+				if (spanTag.text().indexOf("\u9884\u552E\u4EF7\u683C") != -1) {
+					priceFontTag = spanTag.select("font").first();
+				}
+			}
 		}
 		if (priceFontTag != null) {
 			ici.setPrice(priceFontTag.text());
@@ -196,7 +251,7 @@ public class IautosDetailCallback extends Callback {
 		if (status.length() == 0) {
 			throw new IllegalArgumentException("StatusType is blank");
 		}
-		if (status == ici.getPrice()) {
+		if (status.equals(ici.getPrice())) {
 			ici.setStatusType(IautosCarInfo.STATUS_TYPE_FOR_SALE);
 		} else if ("\u5DF2\u552E".equals(status)) {
 			// sold yi shou
@@ -205,8 +260,9 @@ public class IautosDetailCallback extends Callback {
 			// overdue yu qi
 			ici.setStatusType(IautosCarInfo.STATUS_TYPE_OVERDUE);
 		} else {
-			throw new IllegalArgumentException("StatusType is out of control"
-					+ status);
+			throw new IllegalArgumentException("StatusType is out of control "
+					+ status + "---" + ici.getPrice() + "..."
+					+ this.getResponseWrapper().getUrl());
 		}
 	}
 
@@ -233,35 +289,40 @@ public class IautosDetailCallback extends Callback {
 			if (divTag != null) {
 				// check if shop is exist
 
-				// get shop fetcher
-				Fetcher sellerFetcher = this.getSellerFetcher(divTag);
 				// get shop url
-				String shopUrl = sellerFetcher.getRequestWrapper().getUrl();
+				String shopUrl = this.getSellerUrl(divTag);
 
-				// set seller url
-				ici.setShopUrl(shopUrl);
+				if (shopUrl.trim().length() > 0
+						&& !shopUrl.trim().equals(
+								this.getResponseWrapper().getUrl())) {
+					// set seller url
+					ici.setShopUrl(shopUrl);
 
-				isi = this.getSellerDao().getByShopUrl(shopUrl,
-						this.getSession());
+					// get shop fetcher
+					Fetcher sellerFetcher = this.getSellerFetcher(shopUrl);
 
-				if (null != isi) {
-					// if shop exist
-					getLogger().debug(
-							"shop already exist " + isi.getSeqID() + ","
-									+ isi.getShopUrl());
-				} else {
-					// add shop fetcher
-					fetchers.add(sellerFetcher);
+					isi = this.getSellerDao().getByShopUrl(shopUrl,
+							this.getSession());
 
-					isi = new IautosSellerInfo();
-					isi.setShopUrl(ici.getShopUrl());
+					if (null != isi) {
+						// if shop exist
+						getLogger().debug(
+								"shop already exist " + isi.getSeqID() + ","
+										+ isi.getShopUrl());
+					} else {
+						// add shop fetcher
+						fetchers.add(sellerFetcher);
 
-					// save to db
-					this.getSellerDao().addShopInfo(isi, this.getSession());
+						isi = new IautosSellerInfo();
+						isi.setShopUrl(ici.getShopUrl());
+
+						// save to db
+						this.getSellerDao().addShopInfo(isi, this.getSession());
+					}
+
+					// set shop
+					ici.setIautosSellerInfo(isi);
 				}
-
-				// set shop
-				ici.setIautosSellerInfo(isi);
 
 			} else {
 				getLogger().warn(
@@ -271,8 +332,13 @@ public class IautosDetailCallback extends Callback {
 
 			this.getDetailItem(doc, ici);
 			// this.getCarDao().addCarInfo(ici);
-			this.getCarDao().addCarInfo(ici, this.getSession());
 
+			if (null != this.getCarDao().getByCarUrlAndDeclareDate(
+					ici.getCarSourceUrl(), ici.getDeclareDate(),
+					this.getSession())) {
+			} else {
+				this.getCarDao().addCarInfo(ici, this.getSession());
+			}
 			tx.commit();
 		} catch (Exception e) {
 			tx.rollback();

@@ -14,14 +14,13 @@
 		<property name="locate" column="CityName"></property>
 		<property name="sourceType" column="SourceType"></property>
 		<property name="sellerType" column="CarSourceType"></property>
-		<property name="licenseDate" column="LicenseDate"></property>
 		<property name="gearbox" column="Gearbox"></property>
 		<property name="displacement" column="Displacement"></property>
 		<property name="roadHaul" column="RoadHaul"></property>
 		<property name="color" column="CarColor"></property>
 		<property name="carType" column="CarType"></property>
 		<property name="contacterPhone" column="ContacterPhone"></property>
-		<property name="DeclareDate" column="declareDate"></property>
+		<property name="declareDate" column="DeclareDate"></property>
 		<property name="contacter" column="Contacter"></property>
 		<property name="price" column="Price"></property>
 		<property name="offlineDate" column="OffLineDateTime"></property>
@@ -36,7 +35,7 @@
 	<union-subclass name="pp.corleone.domain.iautos.IautosCarInfo"
 		table="CarInfo_Iautos" extends="pp.corleone.domain.CarInfo">
 		<property name="shopUrl" column="ContacterURL"></property>
-
+		<property name="licenseDate" column="LicenseDate"></property>
 		<many-to-one column="sellerID" name="iautosSellerInfo"
 			class="pp.corleone.domain.iautos.IautosSellerInfo" cascade="save-update"
 			not-null="false" lazy="false">

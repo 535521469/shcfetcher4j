@@ -1,6 +1,7 @@
 package pp.corleone.dao.iautos;
 
 import java.util.Date;
+import java.util.List;
 
 import org.hibernate.Query;
 import org.hibernate.Session;
@@ -23,12 +24,22 @@ public class IautosCarInfoDao {
 		this.session = session;
 	}
 
+	@Deprecated
 	public IautosCarInfo getByCarUrl(String sourceUrl, Session session) {
 		Query query = session
 				.createQuery("from IautosCarInfo where sourceUrl=:sourceUrl");
 		query.setString("sourceUrl", sourceUrl);
 		IautosCarInfo carInfo = (IautosCarInfo) query.uniqueResult();
 		return carInfo;
+	}
+
+	@SuppressWarnings("unchecked")
+	public List<IautosCarInfo> listByCarUrl(String sourceUrl, Session session) {
+		Query query = session
+				.createQuery("from IautosCarInfo where sourceUrl=:sourceUrl");
+		query.setString("sourceUrl", sourceUrl);
+		List<IautosCarInfo> carInfos = (List<IautosCarInfo>) query.list();
+		return carInfos;
 	}
 
 	public IautosCarInfo getByCarUrlAndDeclareDate(String sourceUrl,
@@ -41,6 +52,7 @@ public class IautosCarInfoDao {
 		return carInfo;
 	}
 
+	@Deprecated
 	public IautosCarInfo getByCarUrl(String sourceUrl) {
 		Query query = this.getSession().createQuery(
 				"from IautosCarInfo where sourceUrl=:sourceUrl");

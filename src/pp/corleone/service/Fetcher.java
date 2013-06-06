@@ -27,17 +27,17 @@ public abstract class Fetcher implements Callable<ResponseWrapper> {
 		this.requestWrapper = requestWrapper;
 	}
 
-	public boolean isIgnore() {
-		return true;
+	public boolean isIgnore() throws InterruptedException {
+		return false;
 	}
 
 	@Override
-	public ResponseWrapper call() throws Exception {
+	public ResponseWrapper call() throws InterruptedException {
 
-		if (this.isIgnore()) {
+		ResponseWrapper rw = null;
+		if (!this.isIgnore()) {
 
 			String url = this.getRequestWrapper().getUrl();
-			ResponseWrapper rw = null;
 			try {
 				getLogger().debug("crawl " + url);
 				Document doc = Jsoup.connect(url).get();
@@ -46,13 +46,7 @@ public abstract class Fetcher implements Callable<ResponseWrapper> {
 				e.printStackTrace();
 			}
 
-			return rw;
-		} else {
-			getLogger().info(
-					"ignore fetch " + this.getRequestWrapper().getUrl());
-			throw new InterruptedException("ignore fetch "
-					+ this.getRequestWrapper().getUrl());
 		}
-
+		return rw;
 	}
 }

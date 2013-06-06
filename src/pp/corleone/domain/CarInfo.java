@@ -28,7 +28,6 @@ public abstract class CarInfo {
 	private String roadHaul;
 	private String displacement;
 	private String gearbox;
-	private Date licenseDate;
 
 	public Date getFetchDate() {
 		return fetchDate;
@@ -118,13 +117,6 @@ public abstract class CarInfo {
 		this.gearbox = gearbox;
 	}
 
-	public Date getLicenseDate() {
-		return licenseDate;
-	}
-
-	public void setLicenseDate(Date licenseDate) {
-		this.licenseDate = licenseDate;
-	}
 
 	public String getContacter() {
 		return contacter;

@@ -1,6 +1,7 @@
 package pp.corleone.domain.iautos;
 
 import java.io.Serializable;
+import java.util.Date;
 
 import pp.corleone.domain.CarInfo;
 
@@ -17,7 +18,8 @@ public class IautosCarInfo extends CarInfo implements Cloneable, Serializable {
 	private IautosSellerInfo iautosSellerInfo;
 
 	private String shopUrl;
-
+	private String licenseDate;
+	
 	public String getShopUrl() {
 		return shopUrl;
 	}
@@ -44,6 +46,14 @@ public class IautosCarInfo extends CarInfo implements Cloneable, Serializable {
 
 	public String getSourceType() {
 		return SOURCE_TYPE;
+	}
+
+	public String getLicenseDate() {
+		return licenseDate;
+	}
+
+	public void setLicenseDate(String licenseDate) {
+		this.licenseDate = licenseDate;
 	}
 
 	@Override

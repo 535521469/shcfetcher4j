@@ -1,5 +1,7 @@
 package pp.corleone.service.iautos;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -39,12 +41,7 @@ public class FetcherThread extends Thread {
 						.size() > 0) {
 
 					getLogger().debug(
-							"fetch "
-									+ fetcher.getRequestWrapper().getUrl()
-									+ " [ refer to "
-									+ fetcher.getRequestWrapper()
-											.getReferRequestWrappers().get(0)
-											.getUrl() + " ]");
+							"fetch " + fetcher.getRequestWrapper().getUrl());
 				} else {
 					getLogger().debug(
 							"fetch " + fetcher.getRequestWrapper().getUrl());
@@ -53,18 +50,29 @@ public class FetcherThread extends Thread {
 				Future<ResponseWrapper> fu = pe.submit(fetcher);
 				try {
 					ResponseWrapper responseWrapper = fu.get();
+					if (null != responseWrapper) {
+						Callback cb = fetcher.getRequestWrapper().getCallback();
+						cb.setResponseWrapper(responseWrapper);
+						boolean offeredFlag = false;
 
-					Callback cb = fetcher.getRequestWrapper().getCallback();
-					responseWrapper.setReferRequestWrapper(fetcher
-							.getRequestWrapper());
+						do {
+							offeredFlag = IautosResource.extractQueue.offer(cb,
+									500, TimeUnit.MILLISECONDS);
 
-					boolean offeredFlag = false;
+							getLogger().debug(
+									"offer callback "
+											+ cb.getClass()
+											+ " refer to "
+											+ cb.getResponseWrapper()
+													.getReferRequestWrapper()
+													.getUrl());
 
-					do {
-						IautosResource.extractQueue.offer(cb, 500,
-								TimeUnit.MILLISECONDS);
-					} while (offeredFlag);
-
+						} while (!offeredFlag);
+					} else {
+						getLogger().info(
+								"ignore fetch :"
+										+ fetcher.getRequestWrapper().getUrl());
+					}
 				} catch (ExecutionException e) {
 					e.printStackTrace();
 				}

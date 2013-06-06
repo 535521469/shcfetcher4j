@@ -1,16 +1,16 @@
-<?xml version="1.0"?>
-<!DOCTYPE hibernate-mapping PUBLIC 
-	"-//Hibernate/Hibernate Mapping DTD 3.0//EN"
-	"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
-<hibernate-mapping>
+<!-- <?xml version="1.0"?> -->
+<!-- <!DOCTYPE hibernate-mapping PUBLIC  -->
+<!-- 	"-//Hibernate/Hibernate Mapping DTD 3.0//EN" -->
+<!-- 	"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd"> -->
+<!-- <hibernate-mapping> -->
 
-	<class name=" pp.corleone.domain.iautos.IautosCarInfo" table="CarInfo_Iautos">
-		<id name="seqid" column="SEQID" type="string">
-			<generator class="uuid.hex"></generator>
-		</id>
+<!-- 	<class name=" pp.corleone.domain.iautos.IautosCarInfo" table="CarInfo_Iautos"> -->
+<!-- 		<id name="seqid" column="SEQID" type="string"> -->
+<!-- 			<generator class="uuid.hex"></generator> -->
+<!-- 		</id> -->
 
-		<property name="shopUrl" column="ContacterURL"></property>
+<!-- 		<property name="shopUrl" column="ContacterURL"></property> -->
 
-	</class>
+<!-- 	</class> -->
 
-</hibernate-mapping>
+<!-- </hibernate-mapping> -->

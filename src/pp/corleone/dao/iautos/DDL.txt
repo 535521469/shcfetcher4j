@@ -4,7 +4,12 @@ create database SecondhandCar_Fundamental;
 $$
 use SecondhandCar_Fundamental;
 
-$$
+
+
+delimiter $$
+
+
+
 CREATE TABLE `CarInfo_Iautos` (
   `SEQID` varchar(32) NOT NULL COMMENT '记录ID',
   `CityName` varchar(64) DEFAULT NULL COMMENT '所属城市',
@@ -31,7 +36,7 @@ CREATE TABLE `CarInfo_Iautos` (
   `MTime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '最后更新时间',
   `CTime` datetime DEFAULT NULL COMMENT '创建时间',
   PRIMARY KEY (`SEQID`),
-  UNIQUE KEY `SourceUrl` (`SourceUrl`)
+  UNIQUE KEY `UK_SourceUrl_DeclareDate` (`SourceUrl`,`DeclareDate`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='车辆信息'$$
 
 CREATE
