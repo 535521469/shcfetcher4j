@@ -23,7 +23,6 @@ public abstract class CarInfo {
 	private String cityName;
 	private Integer statusType;
 	private String price;
-	private String carType; // brand
 	private String color;
 	private String roadHaul;
 	private String displacement;
@@ -75,14 +74,6 @@ public abstract class CarInfo {
 
 	public void setPrice(String price) {
 		this.price = price;
-	}
-
-	public String getCarType() {
-		return carType;
-	}
-
-	public void setCarType(String carType) {
-		this.carType = carType;
 	}
 
 	public String getColor() {

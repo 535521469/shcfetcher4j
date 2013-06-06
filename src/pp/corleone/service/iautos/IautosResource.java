@@ -8,7 +8,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 
-import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import pp.corleone.service.Callback;
@@ -25,13 +24,12 @@ public class IautosResource {
 
 		LoggerFactory.getLogger(IautosResource.class).info(
 				"set default thread pool size :"
-						+ Runtime.getRuntime().availableProcessors());
+						+ Runtime.getRuntime().availableProcessors() + 1);
 
-		// threadPool = (ThreadPoolExecutor)
-		// Executors.newFixedThreadPool(Runtime
-		// .getRuntime().availableProcessors());
+		threadPool = (ThreadPoolExecutor) Executors.newFixedThreadPool(Runtime
+				.getRuntime().availableProcessors() + 1);
 
-		threadPool = (ThreadPoolExecutor) Executors.newFixedThreadPool(1);
+		// threadPool = (ThreadPoolExecutor) Executors.newFixedThreadPool(1);
 
 		try {
 			prop.load(is);

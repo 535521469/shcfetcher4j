@@ -4,7 +4,6 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -119,10 +118,6 @@ public class IautosListCallback extends Callback {
 		} else {
 			this.getLogger().info(this.getCityName() + " rearch last page ");
 		}
-
-		this.getLogger().info(
-				this.getCityName() + " end..."
-						+ this.getResponseWrapper().getUrl());
 
 		return fetched;
 

@@ -1,9 +1,6 @@
 package pp.corleone.service.iautos;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -41,7 +38,11 @@ public class FetcherThread extends Thread {
 						.size() > 0) {
 
 					getLogger().debug(
-							"fetch " + fetcher.getRequestWrapper().getUrl());
+							"fetch "
+									+ fetcher.getRequestWrapper().getUrl()
+									+ " refer to "
+									+ fetcher.getRequestWrapper()
+											.getLastRequestUrl());
 				} else {
 					getLogger().debug(
 							"fetch " + fetcher.getRequestWrapper().getUrl());
@@ -69,7 +70,7 @@ public class FetcherThread extends Thread {
 
 						} while (!offeredFlag);
 					} else {
-						getLogger().info(
+						getLogger().debug(
 								"ignore fetch :"
 										+ fetcher.getRequestWrapper().getUrl());
 					}

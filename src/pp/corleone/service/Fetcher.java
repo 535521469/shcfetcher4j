@@ -1,5 +1,6 @@
 package pp.corleone.service;
 
+import java.io.IOException;
 import java.util.concurrent.Callable;
 
 import org.jsoup.Jsoup;
@@ -38,11 +39,12 @@ public abstract class Fetcher implements Callable<ResponseWrapper> {
 		if (!this.isIgnore()) {
 
 			String url = this.getRequestWrapper().getUrl();
+			getLogger().debug("crawl " + url);
+			Document doc;
 			try {
-				getLogger().debug("crawl " + url);
-				Document doc = Jsoup.connect(url).get();
-				return new ResponseWrapper(doc, this.requestWrapper);
-			} catch (Exception e) {
+				doc = Jsoup.connect(url).get();
+				rw = new ResponseWrapper(doc, this.requestWrapper);
+			} catch (IOException e) {
 				e.printStackTrace();
 			}
 

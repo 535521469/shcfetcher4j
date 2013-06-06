@@ -3,7 +3,6 @@ package pp.corleone.service.iautos.detail;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -90,11 +89,16 @@ public class IautosDetailCallback extends Callback {
 		this.fillContacterAndPhone(doc, ici);
 
 		this.fillPriceAndStatus(detailDivTag, ici);
-		this.fillTitle(detailDivTag, ici);
 		this.fillDisplacementAndGearbox(detailDivTag, ici);
 
 		Element parameterTableTag = doc.select("table.parameter").first();
 		this.fillParameters(parameterTableTag, ici);
+
+		this.fillParkAddress(detailDivTag, ici);
+
+		// fill title at last , title = brand + displacement + gearbox
+		// this.fillTitle(detailDivTag, ici);
+		this.fillTitle(ici);
 
 		Date now = new Date();
 		ici.setFetchDate(now);
@@ -122,9 +126,9 @@ public class IautosDetailCallback extends Callback {
 		Elements basicTrTags = parameterTag.select("tr");
 
 		/* suo shu pin pai */
-		Element carTypeATag = basicTrTags.get(2).select("td").get(0)
-				.select("a").first(); // suo shu pin pai
-		ici.setCarType(carTypeATag.text());
+		Element brandTdTag = basicTrTags.get(2).select("td").get(0).select("a")
+				.first(); // suo shu pin pai
+		ici.setBrand(brandTdTag.text());
 
 		/* xing shi li cheng */
 		Element roadHaulTdTag = basicTrTags.get(5).select("td").first();
@@ -184,11 +188,27 @@ public class IautosDetailCallback extends Callback {
 				"\u521D\u767B\u65E5\u671F\uFF1A", "");
 		ici.setLicenseDate(licensedDateString);
 
+		// \u751F\u4EA7\u5382\u5BB6\uFF1A : sheng chan chang shang ,
+		// manufacturer
+		Element manufacturerTdTagElement = basicTrTags.get(1).select("td")
+				.first();
+		String manufacturer = StringUtils.replace(
+				manufacturerTdTagElement.text(),
+				"\u751F\u4EA7\u5382\u5BB6\uFF1A", "");
+		ici.setManufacturer(manufacturer);
+
 	}
 
+	@SuppressWarnings("unused")
+	@Deprecated
 	private void fillTitle(Element detail, IautosCarInfo ici) {
 		Element titleSpan = detail.select("div>span.span1").first();
 		ici.setTitle(titleSpan.text());
+	}
+
+	private void fillTitle(IautosCarInfo ici) {
+		ici.setTitle(ici.getBrand() + " " + ici.getDisplacement() + " "
+				+ ici.getGearbox());
 	}
 
 	private void fillDisplacementAndGearbox(Element detail, IautosCarInfo ici) {
@@ -266,7 +286,30 @@ public class IautosDetailCallback extends Callback {
 		}
 	}
 
-	private void fillWatchAddress(Element doc, IautosCarInfo ici) {
+	private void fillParkAddress(Element detail, IautosCarInfo ici) {
+		Element detailDivTag = detail.select("div.div1").first();
+		if (detailDivTag == null) {
+			detailDivTag = detail.select("div.div4").first();
+		}
+
+		if (detailDivTag != null) {
+			Elements pTags = detailDivTag.select("p");
+			if (null != pTags && pTags.size() > 0) {
+				for (Element pTag : pTags) {
+					String tempString = pTag.text();
+
+					// \u770B\u8F66\u5730\u5740\uFF1A : kan che di zhi
+					// park address
+					if (tempString.indexOf("\u770B\u8F66\u5730\u5740\uFF1A") != -1) {
+						String parkAddress = StringUtils.replace(tempString,
+								"\u770B\u8F66\u5730\u5740\uFF1A", "");
+						ici.setParkAddress(parkAddress);
+						break;
+					}
+				}
+			}
+		}
+
 	}
 
 	@Override
@@ -325,7 +368,7 @@ public class IautosDetailCallback extends Callback {
 				}
 
 			} else {
-				getLogger().warn(
+				getLogger().debug(
 						"shop url is null ,"
 								+ this.getResponseWrapper().getUrl());
 			}
