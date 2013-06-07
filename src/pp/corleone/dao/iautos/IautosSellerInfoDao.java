@@ -32,7 +32,7 @@ public class IautosSellerInfoDao {
 	public void addShopInfo(IautosSellerInfo isi) {
 		this.getSession().save(isi);
 	}
-	
+
 	public IautosSellerInfo getByShopUrl(String shopUrl, Session session) {
 		Query query = session
 				.createQuery("from IautosSellerInfo where shopUrl=:shopUrl");
@@ -40,9 +40,17 @@ public class IautosSellerInfoDao {
 		IautosSellerInfo shop = (IautosSellerInfo) query.uniqueResult();
 		return shop;
 	}
-	
+
 	public void addShopInfo(IautosSellerInfo isi, Session session) {
 		session.save(isi);
+	}
+
+	public IautosSellerInfo getBySeqID(String seqid, Session session) {
+		if (null == seqid) {
+			throw new IllegalArgumentException(
+					" get by seller seqid , seqid is null ");
+		}
+		return (IautosSellerInfo) session.get(IautosSellerInfo.class, seqid);
 	}
 
 }

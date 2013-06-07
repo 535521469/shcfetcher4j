@@ -10,13 +10,13 @@ public class IautosConstant {
 	public final static String CAR_INFO = "CARINFO";
 
 	public static String buildShopUrl(String url) {
-//		return url + "pas1ds9vepcatcpbnscac/";
-		return url + "pas1ds10vepcatcpbnscac/";
+		return url + "pas1ds9vepcatcpbnscac/";
+//		return url + "pas1ds10vepcatcpbnscac/";
 	}
 
 	public static String buildPersonalUrl(String url) {
-//		return url + "pas2ds9vepcatcpbnscac/";
-		return url + "pas2ds10vepcatcpbnscac/";
+		return url + "pas2ds9vepcatcpbnscac/";
+//		return url + "pas2ds10vepcatcpbnscac/";
 	}
 
 }

@@ -9,6 +9,7 @@ import pp.corleone.dao.DaoUtil;
 import pp.corleone.dao.iautos.IautosCarInfoDao;
 import pp.corleone.dao.iautos.IautosSellerInfoDao;
 import pp.corleone.domain.iautos.IautosCarInfo;
+import pp.corleone.domain.iautos.IautosCarInfo.IautosStatusCode;
 import pp.corleone.service.Fetcher;
 import pp.corleone.service.RequestWrapper;
 import pp.corleone.service.iautos.IautosConstant;
@@ -74,7 +75,7 @@ public class IautosDetailFetcher extends Fetcher {
 								.equals(carInfo.getDeclareDate())) {
 					// exist carinfo's declare date is not null and is equals
 					// with the car's declare date
-					this.getLogger().info(
+					this.getLogger().debug(
 							"car is exist :" + ici.getSeqID()
 									+ ici.getDeclareDate() + "" + " "
 									+ ici.getCarSourceUrl());
@@ -82,10 +83,10 @@ public class IautosDetailFetcher extends Fetcher {
 				}
 
 				if (ici.getStatusType() != null
-						&& IautosCarInfo.STATUS_TYPE_FOR_SALE != ici
+						&& IautosStatusCode.STATUS_TYPE_FOR_SALE.getCode() != ici
 								.getStatusType()) {
 					// the car life cycle is over
-					getLogger().info(
+					getLogger().debug(
 							"car life cycle is over :" + ici.getStatusType()
 									+ this.getRequestWrapper().getUrl());
 					break;

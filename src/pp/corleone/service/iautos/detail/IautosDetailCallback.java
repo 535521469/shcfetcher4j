@@ -21,9 +21,11 @@ import pp.corleone.dao.iautos.IautosSellerInfoDao;
 import pp.corleone.domain.iautos.FetcherConstants;
 import pp.corleone.domain.iautos.IautosCarInfo;
 import pp.corleone.domain.iautos.IautosSellerInfo;
+import pp.corleone.domain.iautos.IautosCarInfo.IautosStatusCode;
 import pp.corleone.service.Callback;
 import pp.corleone.service.Fetcher;
 import pp.corleone.service.RequestWrapper;
+import pp.corleone.service.RequestWrapper.PriorityEnum;
 import pp.corleone.service.iautos.IautosConstant;
 import pp.corleone.service.iautos.seller.IautosSellerCallback;
 import pp.corleone.service.iautos.seller.IautosSellerFetcher;
@@ -67,9 +69,15 @@ public class IautosDetailCallback extends Callback {
 	 */
 	private Fetcher getSellerFetcher(String shopUrl) {
 		Callback sellerCallback = new IautosSellerCallback();
+		RequestWrapper referRequestWrapper = this.getResponseWrapper()
+				.getReferRequestWrapper();
+
 		RequestWrapper requestWrapper = new RequestWrapper(shopUrl,
 				sellerCallback, this.getResponseWrapper()
-						.getReferRequestWrapper());
+						.getReferRequestWrapper(),
+				PriorityEnum.SELLER.getValue(), referRequestWrapper.getMeta(),
+				referRequestWrapper.getContext());
+
 		Fetcher sellerFetcher = new IautosSellerFetcher(requestWrapper);
 		return sellerFetcher;
 	}
@@ -96,8 +104,8 @@ public class IautosDetailCallback extends Callback {
 
 		this.fillParkAddress(detailDivTag, ici);
 
-		// fill title at last , title = brand + displacement + gearbox
 		// this.fillTitle(detailDivTag, ici);
+		// fill title at last , title = brand + displacement + gearbox
 		this.fillTitle(ici);
 
 		Date now = new Date();
@@ -272,13 +280,13 @@ public class IautosDetailCallback extends Callback {
 			throw new IllegalArgumentException("StatusType is blank");
 		}
 		if (status.equals(ici.getPrice())) {
-			ici.setStatusType(IautosCarInfo.STATUS_TYPE_FOR_SALE);
+			ici.setStatusType(IautosStatusCode.STATUS_TYPE_FOR_SALE);
 		} else if ("\u5DF2\u552E".equals(status)) {
 			// sold yi shou
-			ici.setStatusType(IautosCarInfo.STATUS_TYPE_SOLD);
+			ici.setStatusType(IautosStatusCode.STATUS_TYPE_SOLD);
 		} else if ("\u903E\u671F".equals(status)) {
 			// overdue yu qi
-			ici.setStatusType(IautosCarInfo.STATUS_TYPE_OVERDUE);
+			ici.setStatusType(IautosStatusCode.STATUS_TYPE_OVERDUE);
 		} else {
 			throw new IllegalArgumentException("StatusType is out of control "
 					+ status + "---" + ici.getPrice() + "..."
@@ -329,11 +337,13 @@ public class IautosDetailCallback extends Callback {
 			IautosSellerInfo isi = null;
 			Element divTag = doc.select("div.box2>div.pjzl").first();
 
-			if (divTag != null) {
+//			if (divTag != null || true) {
+				if (divTag != null ) {
 				// check if shop is exist
 
 				// get shop url
 				String shopUrl = this.getSellerUrl(divTag);
+//				String shopUrl = "http://axcar.iautos.cn/";
 
 				if (shopUrl.trim().length() > 0
 						&& !shopUrl.trim().equals(
@@ -360,7 +370,8 @@ public class IautosDetailCallback extends Callback {
 						isi.setShopUrl(ici.getShopUrl());
 
 						// save to db
-						this.getSellerDao().addShopInfo(isi, this.getSession());
+						// this.getSellerDao().addShopInfo(isi,
+						// this.getSession());
 					}
 
 					// set shop

@@ -24,7 +24,7 @@ CREATE TABLE `SecondhandCar_Fundamental`.`CarInfo_Iautos` (
   `SellerID` varchar(32) DEFAULT NULL COMMENT '卖家ID',
   `Contacter` varchar(512) DEFAULT NULL COMMENT '联系人',
   `ContacterURL` varchar(512) DEFAULT NULL COMMENT '联系人链接',
-  `ContacterPhone` varchar(32) DEFAULT NULL COMMENT '联系人电话',
+  `ContacterPhone` varchar(256) DEFAULT NULL COMMENT '联系人电话',
   `MTime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '最后更新时间',
   `CTime` datetime DEFAULT NULL COMMENT '创建时间',
   PRIMARY KEY (`SEQID`),

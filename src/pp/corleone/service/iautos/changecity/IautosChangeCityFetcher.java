@@ -8,4 +8,5 @@ public class IautosChangeCityFetcher extends Fetcher {
 	public IautosChangeCityFetcher(RequestWrapper requestWrapper) {
 		super(requestWrapper);
 	}
+
 }

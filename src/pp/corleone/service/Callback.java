@@ -8,9 +8,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public abstract class Callback implements Callable<Map<String, Collection<?>>> {
-	
+
 	private ResponseWrapper responseWrapper;
-	
+
 	public ResponseWrapper getResponseWrapper() {
 		return responseWrapper;
 	}

@@ -19,6 +19,7 @@ import pp.corleone.domain.iautos.IautosCarInfo;
 import pp.corleone.service.Callback;
 import pp.corleone.service.Fetcher;
 import pp.corleone.service.RequestWrapper;
+import pp.corleone.service.RequestWrapper.PriorityEnum;
 import pp.corleone.service.iautos.IautosConstant;
 import pp.corleone.service.iautos.detail.IautosDetailCallback;
 import pp.corleone.service.iautos.detail.IautosDetailFetcher;
@@ -77,14 +78,13 @@ public class IautosListCallback extends Callback {
 				.getReferRequestWrapper().getContext()
 				.get(IautosConstant.CAR_INFO);
 
-
 		for (Element liCar : liCars) {
 			Element aCar = liCar.select("h4>a").first();
 			String detailUrl = aCar.attr("href");
 
 			RequestWrapper requestWrapper = new RequestWrapper(detailUrl,
 					detailCallback, this.getResponseWrapper()
-							.getReferRequestWrapper());
+							.getReferRequestWrapper(), PriorityEnum.DETAIL);
 
 			IautosCarInfo newCarInfo = ici.clone();
 			newCarInfo.setCarSourceUrl(detailUrl);
@@ -97,7 +97,7 @@ public class IautosListCallback extends Callback {
 			getLogger().debug(
 					"get detail in list " + detailUrl + ",refer to "
 							+ this.getResponseWrapper().getUrl());
-//			break;
+			// break;
 
 		}
 
@@ -110,16 +110,15 @@ public class IautosListCallback extends Callback {
 			String nextUrl = IautosConstant.searchPage + href;
 			this.getLogger().info("get next page " + nextUrl);
 			RequestWrapper requestWrapper = new RequestWrapper(nextUrl, this,
-					this.getResponseWrapper().getReferRequestWrapper());
+					this.getResponseWrapper().getReferRequestWrapper(),
+					PriorityEnum.LIST);
 			requestWrapper.getContext().put(IautosConstant.CAR_INFO,
 					ici.clone());
 			Fetcher fetcher = new IautosListFetcher(requestWrapper);
-			 fetchers.add(fetcher);
+			fetchers.add(fetcher);
 		} else {
 			this.getLogger().info(this.getCityName() + " rearch last page ");
 		}
-
 		return fetched;
-
 	}
 }

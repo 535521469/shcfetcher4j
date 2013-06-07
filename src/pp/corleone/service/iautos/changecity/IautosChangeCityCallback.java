@@ -15,6 +15,7 @@ import pp.corleone.domain.iautos.IautosCarInfo;
 import pp.corleone.service.Callback;
 import pp.corleone.service.Fetcher;
 import pp.corleone.service.RequestWrapper;
+import pp.corleone.service.RequestWrapper.PriorityEnum;
 import pp.corleone.service.iautos.IautosConstant;
 import pp.corleone.service.iautos.list.IautosListCallback;
 import pp.corleone.service.iautos.list.IautosListFetcher;
@@ -47,12 +48,14 @@ public class IautosChangeCityCallback extends Callback {
 
 		if (IautosCarInfo.SELLER_TYPE_PERSON == sellerType) {
 			RequestWrapper per = new RequestWrapper(url, listCallback, this
-					.getResponseWrapper().getReferRequestWrapper());
+					.getResponseWrapper().getReferRequestWrapper(),
+					PriorityEnum.CHANGE_CITY);
 			per.getContext().put(IautosConstant.CAR_INFO, ici);
 			return new IautosListFetcher(per);
 		} else if (IautosCarInfo.SELLER_TYPE_SHOP == sellerType) {
 			RequestWrapper shop = new RequestWrapper(url, listCallback, this
-					.getResponseWrapper().getReferRequestWrapper());
+					.getResponseWrapper().getReferRequestWrapper(),
+					PriorityEnum.CHANGE_CITY);
 			shop.getContext().put(IautosConstant.CAR_INFO, ici);
 			return new IautosListFetcher(shop);
 		}
@@ -67,7 +70,6 @@ public class IautosChangeCityCallback extends Callback {
 		Document doc = this.getResponseWrapper().getDoc();
 
 		Elements provinceATags = doc.select("div.province>a[href]");
-
 
 		for (Element provinceATag : provinceATags) {
 			// \uFF1A is colon
@@ -122,14 +124,16 @@ public class IautosChangeCityCallback extends Callback {
 				String cityShopUrl = IautosConstant.buildShopUrl(cityUrl);
 
 				Fetcher cityShop = this.buildFetcher(cityName, cityShopUrl,
-						IautosCarInfo.SELLER_TYPE_SHOP, new IautosListCallback());
+						IautosCarInfo.SELLER_TYPE_SHOP,
+						new IautosListCallback());
 				fetchers.add(cityShop);// city shop
 
 				// get city personal url
 				String cityPerUrl = IautosConstant.buildPersonalUrl(cityUrl);
 
 				Fetcher cityPer = this.buildFetcher(cityName, cityPerUrl,
-						IautosCarInfo.SELLER_TYPE_PERSON, new IautosListCallback());
+						IautosCarInfo.SELLER_TYPE_PERSON,
+						new IautosListCallback());
 				fetchers.add(cityPer);// city person
 
 				this.getLogger().debug(

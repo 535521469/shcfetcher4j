@@ -10,7 +10,8 @@ public class RequestWrapper {
 	private Callback callback;
 
 	private String url;
-	private Map<String, Object> meta = new HashMap<String, Object>();
+	private int priority;
+	private Map<MetaEnum, Object> meta = new HashMap<MetaEnum, Object>();
 	private Map<String, Object> context = new HashMap<String, Object>();
 
 	public String getLastRequestUrl() {
@@ -47,11 +48,19 @@ public class RequestWrapper {
 		this.context = context;
 	}
 
-	public Map<String, Object> getMeta() {
+	public int getPriority() {
+		return priority;
+	}
+
+	public void setPriority(int priority) {
+		this.priority = priority;
+	}
+
+	public Map<MetaEnum, Object> getMeta() {
 		return meta;
 	}
 
-	public void setMeta(Map<String, Object> meta) {
+	public void setMeta(Map<MetaEnum, Object> meta) {
 		this.meta = meta;
 	}
 
@@ -78,6 +87,28 @@ public class RequestWrapper {
 		this.getReferRequestWrappers().add(referRequestWarpper);
 	}
 
+	public RequestWrapper(String url, Callback callback,
+			RequestWrapper referRequestWarpper, int priority) {
+		this(url, callback);
+		this.setPriority(priority);
+		this.getReferRequestWrappers().add(referRequestWarpper);
+	}
+
+	public RequestWrapper(String url, Callback callback,
+			RequestWrapper referRequestWarpper, PriorityEnum priority) {
+		this(url, callback);
+		this.setPriority(priority.getValue());
+		this.getReferRequestWrappers().add(referRequestWarpper);
+	}
+
+	public RequestWrapper(String url, Callback callback,
+			RequestWrapper referRequestWarpper, int priority,
+			Map<MetaEnum, Object> metaMap, Map<String, Object> contextMap) {
+		this(url, callback, referRequestWarpper, priority);
+		this.setMeta(metaMap);
+		this.setContext(contextMap);
+	}
+
 	private List<RequestWrapper> referRequestWrappers = new ArrayList<RequestWrapper>();
 
 	public List<RequestWrapper> getReferRequestWrappers() {
@@ -88,6 +119,26 @@ public class RequestWrapper {
 	public void setReferRequestWrappers(
 			List<RequestWrapper> referRequestWrappers) {
 		this.referRequestWrappers = referRequestWrappers;
+	}
+
+	public enum MetaEnum {
+
+	}
+
+	public enum PriorityEnum {
+
+		CHANGE_CITY(100), LIST(50), DETAIL(20), SELLER(15);
+
+		private int value;
+
+		public int getValue() {
+			return value;
+		}
+
+		private PriorityEnum(int val) {
+			this.value = val;
+		}
+
 	}
 
 }

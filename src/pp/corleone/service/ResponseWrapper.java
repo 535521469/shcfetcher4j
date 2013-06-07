@@ -4,6 +4,8 @@ import java.util.Map;
 
 import org.jsoup.nodes.Document;
 
+import pp.corleone.service.RequestWrapper.MetaEnum;
+
 public class ResponseWrapper {
 
 	private Document doc;
@@ -13,7 +15,7 @@ public class ResponseWrapper {
 		return this.getReferRequestWrapper().getUrl();
 	}
 
-	public Map<String, Object> getMeta() {
+	public Map<MetaEnum, Object> getMeta() {
 		return this.getReferRequestWrapper().getMeta();
 	}
 

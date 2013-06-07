@@ -2,6 +2,8 @@ package pp.corleone.domain;
 
 import java.util.Date;
 
+import pp.corleone.domain.iautos.IautosCarInfo.IautosStatusCode;
+
 public abstract class CarInfo {
 
 	public static final int SELLER_TYPE_SHOP = 1;
@@ -68,6 +70,10 @@ public abstract class CarInfo {
 		this.statusType = statusType;
 	}
 
+	public void setStatusType(IautosStatusCode statusType) {
+		this.statusType = statusType.getCode();
+	}
+
 	public String getPrice() {
 		return price;
 	}
@@ -107,7 +113,6 @@ public abstract class CarInfo {
 	public void setGearbox(String gearbox) {
 		this.gearbox = gearbox;
 	}
-
 
 	public String getContacter() {
 		return contacter;

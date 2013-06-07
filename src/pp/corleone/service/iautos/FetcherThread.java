@@ -38,14 +38,19 @@ public class FetcherThread extends Thread {
 						.size() > 0) {
 
 					getLogger().debug(
-							"fetch "
+							"fetch priority "
+									+ fetcher.getRequestWrapper().getPriority()
+									+ " "
 									+ fetcher.getRequestWrapper().getUrl()
 									+ " refer to "
 									+ fetcher.getRequestWrapper()
 											.getLastRequestUrl());
 				} else {
 					getLogger().debug(
-							"fetch " + fetcher.getRequestWrapper().getUrl());
+							"fetch priority "
+									+ fetcher.getRequestWrapper().getPriority()
+									+ " "
+									+ fetcher.getRequestWrapper().getUrl());
 				}
 
 				Future<ResponseWrapper> fu = pe.submit(fetcher);
