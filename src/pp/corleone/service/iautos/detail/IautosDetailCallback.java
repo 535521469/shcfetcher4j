@@ -343,7 +343,7 @@ public class IautosDetailCallback extends Callback {
 
 				// get shop url
 				String shopUrl = this.getSellerUrl(divTag);
-//				String shopUrl = "http://axcar.iautos.cn/";
+//				String shopUrl = "http://reallycar.iautos.cn/";
 
 				if (shopUrl.trim().length() > 0
 						&& !shopUrl.trim().equals(

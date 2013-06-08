@@ -59,9 +59,7 @@ public class ExtractThread extends Thread {
 						for (Object o : fs) {
 							Fetcher fetcher = (Fetcher) o;
 							String fetcherKey = fetcher.getClass().getName();
-
 							boolean offeredFlag = false;
-
 							do {
 
 								offeredFlag = IautosResource.fetchQueue.offer(

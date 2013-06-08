@@ -41,11 +41,13 @@ SET NEW.CTIME = NOW();
 END
 $$
 
+delimiter $$
+
 CREATE TABLE `SellerInfo_Iautos` (
   `SEQID` varchar(32) NOT NULL COMMENT '记录ID',
   `SellerName` varchar(128) DEFAULT NULL COMMENT '卖家名',
   `SellerAddress` varchar(128) DEFAULT NULL COMMENT '卖家地址',
-  `SellerPhone` varchar(32) DEFAULT NULL COMMENT '卖家电话',
+  `SellerPhone` varchar(128) DEFAULT NULL COMMENT '卖家电话',
   `SellerUrl` varchar(256) DEFAULT NULL COMMENT '卖家原始链接',
   `MTime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '最后更新时间',
   `CTime` datetime DEFAULT NULL COMMENT '创建时间',
