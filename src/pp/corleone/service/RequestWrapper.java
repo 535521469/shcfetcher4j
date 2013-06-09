@@ -84,35 +84,37 @@ public class RequestWrapper {
 	public RequestWrapper(String url, Callback callback,
 			RequestWrapper referRequestWarpper) {
 		this(url, callback);
-		this.getReferRequestWrappers().add(referRequestWarpper);
+		if (null != referRequestWarpper) {
+			this.getReferRequestWrappers().add(referRequestWarpper);
+		}
 	}
 
 	public RequestWrapper(String url, Callback callback,
 			RequestWrapper referRequestWarpper, int priority) {
-		this(url, callback);
+		this(url, callback, referRequestWarpper);
 		this.setPriority(priority);
-		this.getReferRequestWrappers().add(referRequestWarpper);
 	}
 
 	public RequestWrapper(String url, Callback callback,
 			RequestWrapper referRequestWarpper, PriorityEnum priority) {
-		this(url, callback);
-		this.setPriority(priority.getValue());
-		this.getReferRequestWrappers().add(referRequestWarpper);
+		this(url, callback, referRequestWarpper, priority.getValue());
 	}
 
 	public RequestWrapper(String url, Callback callback,
 			RequestWrapper referRequestWarpper, int priority,
 			Map<MetaEnum, Object> metaMap, Map<String, Object> contextMap) {
 		this(url, callback, referRequestWarpper, priority);
-		this.setMeta(metaMap);
-		this.setContext(contextMap);
+		if (null != metaMap && !metaMap.isEmpty()) {
+			this.setMeta(metaMap);
+		}
+		if (null != contextMap && !contextMap.isEmpty()) {
+			this.setContext(contextMap);
+		}
 	}
 
 	private List<RequestWrapper> referRequestWrappers = new ArrayList<RequestWrapper>();
 
 	public List<RequestWrapper> getReferRequestWrappers() {
-
 		return referRequestWrappers;
 	}
 
@@ -128,6 +130,7 @@ public class RequestWrapper {
 	public enum PriorityEnum {
 
 		CHANGE_CITY(100), LIST(50), DETAIL(20), SELLER(15);
+		// DETAIL(52), SELLER(55);
 
 		private int value;
 
@@ -138,7 +141,5 @@ public class RequestWrapper {
 		private PriorityEnum(int val) {
 			this.value = val;
 		}
-
 	}
-
 }

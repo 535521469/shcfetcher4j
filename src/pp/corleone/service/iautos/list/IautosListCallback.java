@@ -55,7 +55,6 @@ public class IautosListCallback extends Callback {
 					e.printStackTrace();
 				}
 			}
-
 		}
 
 		return declareDate;
@@ -87,11 +86,13 @@ public class IautosListCallback extends Callback {
 							.getReferRequestWrapper(), PriorityEnum.DETAIL);
 
 			IautosCarInfo newCarInfo = ici.clone();
-			newCarInfo.setCarSourceUrl(detailUrl);
-			newCarInfo.setDeclareDate(this.extractDeclareDate(liCar));
-
 			requestWrapper.getContext()
 					.put(IautosConstant.CAR_INFO, newCarInfo);
+
+			newCarInfo.setCarSourceUrl(detailUrl);
+
+			newCarInfo.setDeclareDate(this.extractDeclareDate(liCar));
+
 			Fetcher fetcher = new IautosDetailFetcher(requestWrapper);
 			fetchers.add(fetcher);
 			getLogger().debug(

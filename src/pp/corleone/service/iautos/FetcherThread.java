@@ -27,7 +27,7 @@ public class FetcherThread extends Thread {
 
 		while (!isInterrupted()) {
 			try {
-				fetcher = IautosResource.fetchQueue.poll(3000,
+				fetcher = IautosResource.fetchQueue.poll(30000,
 						TimeUnit.MILLISECONDS);
 				if (null == fetcher) {
 					getLogger().info("non fetchable ...");

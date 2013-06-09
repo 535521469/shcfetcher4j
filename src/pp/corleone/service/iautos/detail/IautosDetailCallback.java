@@ -14,6 +14,7 @@ import org.hibernate.Transaction;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import org.slf4j.MarkerFactory;
 
 import pp.corleone.dao.DaoUtil;
 import pp.corleone.dao.iautos.IautosCarInfoDao;
@@ -117,15 +118,21 @@ public class IautosDetailCallback extends Callback {
 	private void fillContacterAndPhone(Element doc, IautosCarInfo ici) {
 		Element contacterPhoneDivTag = doc.select("div.div2_tel").first();
 
-		String contacterAndPhone = contacterPhoneDivTag.text();
+		if (null != contacterPhoneDivTag) {
+			String contacterAndPhone = contacterPhoneDivTag.text();
 
-		// \uFF1A : colon , fen hao
-		String[] contacterAndPhoneArray = contacterAndPhone.split("\uFF1A");
-		if (contacterAndPhoneArray.length > 1) {
-			ici.setContacter(contacterAndPhoneArray[0]);
-			ici.setContacterPhone(contacterAndPhoneArray[1]);
+			// \uFF1A : colon , fen hao
+			String[] contacterAndPhoneArray = contacterAndPhone.split("\uFF1A");
+			if (contacterAndPhoneArray.length > 1) {
+				ici.setContacter(contacterAndPhoneArray[0]);
+				ici.setContacterPhone(contacterAndPhoneArray[1]);
+			} else {
+				ici.setContacterPhone(contacterAndPhone);
+			}
 		} else {
-			ici.setContacterPhone(contacterAndPhone);
+			this.getLogger().warn(
+					"... contacter is null:"
+							+ this.getResponseWrapper().getUrl());
 		}
 	}
 
@@ -164,23 +171,8 @@ public class IautosDetailCallback extends Callback {
 		try {
 			Date updateDate = DateFormat.getDateInstance(DateFormat.DATE_FIELD)
 					.parse(updateDateString);
-
 			if (ici.getDeclareDate() == null) {
 				ici.setDeclareDate(updateDate);
-			} else {
-				DateFormat df = DateFormat
-						.getDateInstance(DateFormat.DATE_FIELD);
-				if (!df.format(ici.getDeclareDate()).equals(
-						df.format(updateDate))) {
-					throw new IllegalArgumentException(
-							"update date is not equals declare date "
-									+ this.getResponseWrapper().getUrl()
-									+ " refer to :"
-									+ this.getResponseWrapper()
-											.getReferRequestWrapper()
-											.getLastRequestUrl() + "...."
-									+ ici.getDeclareDate() + updateDate);
-				}
 			}
 		} catch (ParseException e) {
 			e.printStackTrace();
@@ -337,13 +329,13 @@ public class IautosDetailCallback extends Callback {
 			IautosSellerInfo isi = null;
 			Element divTag = doc.select("div.box2>div.pjzl").first();
 
-//			if (divTag != null || true) {
-				if (divTag != null ) {
+			// if (divTag != null || true) {
+			if (divTag != null) {
 				// check if shop is exist
 
 				// get shop url
 				String shopUrl = this.getSellerUrl(divTag);
-//				String shopUrl = "http://reallycar.iautos.cn/";
+				// String shopUrl = "http://reallycar.iautos.cn/";
 
 				if (shopUrl.trim().length() > 0
 						&& !shopUrl.trim().equals(

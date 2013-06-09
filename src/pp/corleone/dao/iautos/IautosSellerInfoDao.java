@@ -1,5 +1,8 @@
 package pp.corleone.dao.iautos;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.hibernate.Query;
 import org.hibernate.Session;
 
@@ -39,6 +42,16 @@ public class IautosSellerInfoDao {
 		query.setString("shopUrl", shopUrl);
 		IautosSellerInfo shop = (IautosSellerInfo) query.uniqueResult();
 		return shop;
+	}
+
+	@SuppressWarnings("unchecked")
+	public List<IautosSellerInfo> getUnfetchedSellerInfos(Session session) {
+		List<IautosSellerInfo> isis = new ArrayList<IautosSellerInfo>();
+		Query query = session.createQuery("from IautosSellerInfo where "
+				+ " shopName is null" + " and shopAddress is null"
+				+ " and shopPhone is null");
+		isis = (List<IautosSellerInfo>) query.list();
+		return isis;
 	}
 
 	public void addShopInfo(IautosSellerInfo isi, Session session) {

@@ -67,17 +67,29 @@ public class IautosSellerCallback extends Callback {
 
 		Transaction tx = this.getSession().beginTransaction();
 
-		this.getLogger().info(this.getResponseWrapper().getUrl());
+		this.getLogger().info("fetch " + this.getResponseWrapper().getUrl());
 
 		try {
-			IautosSellerInfo existIsi = this.getSellerDao().getBySeqID(
-					ici.getIautosSellerInfo().getSeqID(), this.getSession());
+			IautosSellerInfo existIsi = null;
+			if (null != ici) {
+				existIsi = this.getSellerDao()
+						.getBySeqID(ici.getIautosSellerInfo().getSeqID(),
+								this.getSession());
+			} else {
+				IautosSellerInfo isi = (IautosSellerInfo) this
+						.getResponseWrapper().getContext()
+						.get(IautosConstant.SELLER_INFO);
+				if (null != isi) {
+					existIsi = this.getSellerDao().getBySeqID(isi.getSeqID(),
+							this.getSession());
+				}
+			}
 
-			// this.fillShopName(doc, existIsi);
-			// this.fillShopPhone(doc, existIsi);
-			// this.fillShopAddress(doc, existIsi);
-
-			this.fillSeller(doc, existIsi);
+			if (null != existIsi) {
+				this.fillSeller(doc, existIsi);
+			} else {
+				getLogger().error(" seller is null .");
+			}
 
 			tx.commit();
 		} catch (Exception e) {
