@@ -87,6 +87,17 @@ public class IautosCarInfo extends CarInfo implements Cloneable, Serializable {
 		return (IautosCarInfo) super.clone();
 	}
 
+	@Override
+	public boolean equals(Object obj) {
+		if (obj instanceof IautosCarInfo) {
+			IautosCarInfo ici = (IautosCarInfo) obj;
+			if (null != ici.getSeqID() && null != this.getSeqID()) {
+				return ici.getSeqID().equals(this.getSeqID());
+			}
+		}
+		return false;
+	};
+
 	public enum IautosStatusCode {
 		STATUS_TYPE_FOR_SALE(1, "\u5F85\u552E"), STATUS_TYPE_SOLD(4,
 				"\u5DF2\u552E"), STATUS_TYPE_OVERDUE(8, "\u903E\u671F");

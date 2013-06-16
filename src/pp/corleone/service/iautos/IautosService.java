@@ -16,20 +16,25 @@ import org.hibernate.Transaction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import pp.corleone.ConfigManager;
 import pp.corleone.dao.DaoUtil;
+import pp.corleone.dao.iautos.IautosCarInfoDao;
 import pp.corleone.dao.iautos.IautosSellerInfoDao;
-import pp.corleone.domain.iautos.ConfigConstant;
+import pp.corleone.domain.iautos.IautosCarInfo;
+import pp.corleone.domain.iautos.IautosCarInfo.IautosStatusCode;
 import pp.corleone.domain.iautos.IautosSellerInfo;
 import pp.corleone.service.Callback;
 import pp.corleone.service.Fetcher;
 import pp.corleone.service.RequestWrapper;
 import pp.corleone.service.RequestWrapper.PriorityEnum;
-import pp.corleone.service.ResponseWrapper;
 import pp.corleone.service.Service;
+import pp.corleone.service.StatusRequestWrapper;
 import pp.corleone.service.iautos.changecity.IautosChangeCityCallback;
 import pp.corleone.service.iautos.changecity.IautosChangeCityFetcher;
 import pp.corleone.service.iautos.seller.IautosSellerCallback;
 import pp.corleone.service.iautos.seller.IautosSellerFetcher;
+import pp.corleone.service.iautos.status.IautosStatusCallback;
+import pp.corleone.service.iautos.status.IautosStatusFetcher;
 
 public class IautosService extends Service {
 
@@ -39,20 +44,30 @@ public class IautosService extends Service {
 		is.init();
 		is.fetch();
 		is.extract();
+		is.statusFetch();
 
 	}
 
 	public void init() {
+
+		new StatusFetcherManager().run();
+
 		ScheduledThreadPoolExecutor pe = (ScheduledThreadPoolExecutor) Executors
 				.newScheduledThreadPool(1);
 		ChangeCityFetcherManager ccf = this.new ChangeCityFetcherManager();
 		pe.scheduleAtFixedRate(ccf, 0, 3600, TimeUnit.SECONDS);
+
 	}
 
 	@Override
 	public void fetch() {
 		Thread fetcher = new FetcherThread();
 		fetcher.start();
+	}
+
+	public void statusFetch() {
+		Thread status = new StatusThread();
+		status.start();
 	}
 
 	@Override
@@ -70,18 +85,27 @@ public class IautosService extends Service {
 		@Override
 		public void run() {
 
-			String city = IautosResource.prop
-					.getProperty(ConfigConstant.cities);
+			ConfigManager cm = ConfigManager.getInstance();
+
+			try {
+				TimeUnit.SECONDS.sleep(1);
+			} catch (InterruptedException e1) {
+				e1.printStackTrace();
+			}
+
+			String city = cm.getConfigItem(IautosConstant.CITIES, null);
+
 			this.getLogger().info("get cities config ->" + city);
 			Set<String> cities = new HashSet<String>(Arrays.asList(city
 					.split(",")));
 			List<Fetcher> fs = new ArrayList<Fetcher>();
+
 			// add change city fetcher
 			Fetcher f = new IautosChangeCityFetcher(new RequestWrapper(
 					IautosConstant.homePage + "city/",
 					new IautosChangeCityCallback(cities), null,
 					PriorityEnum.CHANGE_CITY));
-			 fs.add(f);
+			fs.add(f);
 
 			// add unfetched seller info fetcher
 			Session session = DaoUtil.getCurrentSession();
@@ -135,6 +159,76 @@ public class IautosService extends Service {
 				getLogger().info(
 						"add " + offer.getValue() + " fetcher task :"
 								+ offer.getKey());
+			}
+
+		}
+	}
+
+	class StatusFetcherManager implements Runnable {
+
+		protected final Logger getLogger() {
+			return LoggerFactory.getLogger(this.getClass());
+		}
+
+		private IautosCarInfoDao carDao;
+
+		public StatusFetcherManager() {
+			this.setCarDao(new IautosCarInfoDao(this.getSession()));
+		}
+
+		public Session getSession() {
+			return DaoUtil.getCurrentSession();
+		}
+
+		public IautosCarInfoDao getCarDao() {
+			return carDao;
+		}
+
+		public void setCarDao(IautosCarInfoDao carDao) {
+			this.carDao = carDao;
+		}
+
+		@Override
+		public void run() {
+
+//			Date now = new Date();
+			// TODO : use joda to convert date
+			Transaction tx = this.getSession().beginTransaction();
+
+			List<IautosCarInfo> icis = null;
+			try {
+				icis = this.getCarDao().listByStatusCode(
+						IautosStatusCode.STATUS_TYPE_FOR_SALE,
+						this.getSession());
+				tx.commit();
+			} catch (Exception e) {
+				e.printStackTrace();
+				tx.rollback();
+			}
+
+			if (null != icis) {
+				List<StatusRequestWrapper> statusRequestWrappers = new ArrayList<StatusRequestWrapper>();
+				for (IautosCarInfo iautosCarInfo : icis) {
+
+					Callback callback = new IautosStatusCallback();
+					Map<String, Object> contextMap = new HashMap<String, Object>();
+					contextMap.put(IautosConstant.CAR_INFO, iautosCarInfo);
+
+					RequestWrapper requestWrapper = new RequestWrapper(
+							iautosCarInfo.getCarSourceUrl(), callback, null,
+							PriorityEnum.STATUS.getValue(), null, contextMap);
+
+					Fetcher fetcher = new IautosStatusFetcher(requestWrapper);
+
+					StatusRequestWrapper statusRequestWrapper = new StatusRequestWrapper(
+							fetcher);
+
+					statusRequestWrappers.add(statusRequestWrapper);
+
+				}
+				IautosResource.statusQueue.addAll(statusRequestWrappers);
+				this.getLogger().info(
+						"add status:" + statusRequestWrappers.size());
 			}
 
 		}

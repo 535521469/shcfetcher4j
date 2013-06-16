@@ -7,6 +7,7 @@ import org.hibernate.Query;
 import org.hibernate.Session;
 
 import pp.corleone.domain.iautos.IautosCarInfo;
+import pp.corleone.domain.iautos.IautosCarInfo.IautosStatusCode;
 
 public class IautosCarInfoDao {
 
@@ -42,6 +43,27 @@ public class IautosCarInfoDao {
 		return carInfos;
 	}
 
+	@SuppressWarnings("unchecked")
+	public List<IautosCarInfo> listByStatusCode(IautosStatusCode statusCode,
+			Session session) {
+		Query query = session
+				.createQuery("from IautosCarInfo where statusType=:statusType");
+		query.setInteger("statusType", statusCode.getCode());
+		List<IautosCarInfo> carInfos = (List<IautosCarInfo>) query.list();
+		return carInfos;
+	}
+
+	@SuppressWarnings("unchecked")
+	public List<IautosCarInfo> listByStatusCodeAndLastActiveDateTime(
+			IautosStatusCode statusCode, Date lastActiveDate, Session session) {
+		Query query = session
+				.createQuery("from IautosCarInfo where statusType=:statusType and lastActiveDate<=:lastActiveDate");
+		query.setInteger("statusType", statusCode.getCode());
+		query.setDate("lastActiveDate", lastActiveDate);
+		List<IautosCarInfo> carInfos = (List<IautosCarInfo>) query.list();
+		return carInfos;
+	}
+
 	public IautosCarInfo getByCarUrlAndDeclareDate(String sourceUrl,
 			Date declareDate, Session session) {
 		Query query = session
@@ -67,6 +89,10 @@ public class IautosCarInfoDao {
 
 	public void addCarInfo(IautosCarInfo ici) {
 		this.getSession().save(ici);
+	}
+
+	public IautosCarInfo getBySeqID(String seqid, Session session) {
+		return (IautosCarInfo) session.get(IautosCarInfo.class, seqid);
 	}
 
 }

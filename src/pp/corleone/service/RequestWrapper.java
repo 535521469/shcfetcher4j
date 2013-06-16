@@ -129,7 +129,7 @@ public class RequestWrapper {
 
 	public enum PriorityEnum {
 
-		CHANGE_CITY(100), LIST(50), DETAIL(20), SELLER(15);
+		CHANGE_CITY(100), LIST(50), DETAIL(20), SELLER(15), STATUS(10);
 		// DETAIL(52), SELLER(55);
 
 		private int value;

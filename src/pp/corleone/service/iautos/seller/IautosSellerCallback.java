@@ -366,6 +366,9 @@ public class IautosSellerCallback extends Callback {
 			for (Element liElement : liElements) {
 				String divHeaderString = liElement.text().trim();
 				Element contentElement = liElement.nextElementSibling();
+				if (null == contentElement) {
+					continue;
+				}
 				String content = contentElement.text().trim();
 				String pattern = "";
 

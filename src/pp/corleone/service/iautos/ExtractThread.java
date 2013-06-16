@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import pp.corleone.domain.iautos.FetcherConstants;
 import pp.corleone.service.Callback;
 import pp.corleone.service.Fetcher;
+import pp.corleone.service.StatusRequestWrapper;
 
 public class ExtractThread extends Thread {
 
@@ -51,27 +52,28 @@ public class ExtractThread extends Thread {
 						continue;
 					}
 
-					if (null != result
-							&& result.containsKey(FetcherConstants.Fetcher)) {
+					if (null == result) {
+						continue;
+					}
+
+					Map<String, Integer> offered = new HashMap<String, Integer>();
+
+					if (result.containsKey(FetcherConstants.Fetcher)) {
 
 						Collection<?> fs = result.get(FetcherConstants.Fetcher);
-						Map<String, Integer> offered = new HashMap<String, Integer>();
+
 						for (Object o : fs) {
 							Fetcher fetcher = (Fetcher) o;
 							String fetcherKey = fetcher.getClass().getName();
 							boolean offeredFlag = false;
 							do {
-
 								offeredFlag = IautosResource.fetchQueue.offer(
 										fetcher, 500, TimeUnit.MILLISECONDS);
-
 								getLogger().debug(
 										"offer "
 												+ fetcher.getRequestWrapper()
 														.getUrl());
-
 							} while (!offeredFlag);
-
 							if (offered.containsKey(fetcherKey)) {
 								offered.put(fetcherKey,
 										offered.get(fetcherKey) + 1);
@@ -79,14 +81,33 @@ public class ExtractThread extends Thread {
 								offered.put(fetcherKey, 1);
 							}
 						}
+					}
+					if (result.containsKey(FetcherConstants.STATUS)) {
 
-						for (Map.Entry<String, Integer> offer : offered
-								.entrySet()) {
-							getLogger().info(
-									"add " + offer.getValue()
-											+ " fetcher task :"
-											+ offer.getKey());
+						Collection<?> ss = result.get(FetcherConstants.STATUS);
+
+						for (Object o : ss) {
+							StatusRequestWrapper srw = (StatusRequestWrapper) o;
+							boolean offeredFlag = false;
+							do {
+								offeredFlag = IautosResource.statusQueue.offer(
+										srw, 500, TimeUnit.MILLISECONDS);
+								getLogger()
+										.debug("offer "
+												+ srw.getFetcher()
+														.getRequestWrapper()
+														.getUrl()
+												+ " delay "
+												+ srw.getDelay(TimeUnit.SECONDS)
+												+ "seconds");
+							} while (!offeredFlag);
+
 						}
+					}
+					for (Map.Entry<String, Integer> offer : offered.entrySet()) {
+						getLogger().info(
+								"add " + offer.getValue() + " fetcher task :"
+										+ offer.getKey());
 					}
 
 				} catch (InterruptedException e) {

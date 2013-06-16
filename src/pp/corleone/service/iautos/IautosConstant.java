@@ -4,7 +4,10 @@ public class IautosConstant {
 
 	public final static String homePage = "http://www.iautos.cn/";
 	public final static String searchPage = "http://so.iautos.cn/";
-	public final static String CITIES = "CITIES";
+	public final static String CITIES = "cities";
+
+	public final static String STATUS_DELAY = "status_delay";
+
 	public final static String LIST = "LIST";
 	public final static String DETAIL = "DETAIL";
 	public final static String CAR_INFO = "CARINFO";
