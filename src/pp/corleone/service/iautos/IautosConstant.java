@@ -8,7 +8,7 @@ public class IautosConstant {
 
 	public final static String STATUS_DELAY = "status_delay";
 	public final static String STATUS_SPLIT_PARTS = "status_split_parts";
-	public final static String TIME_ZONE = "time_zone";
+	public final static String AHEAD_OF_TIME = "ahead_of_time";
 
 	public final static String LIST = "LIST";
 	public final static String DETAIL = "DETAIL";

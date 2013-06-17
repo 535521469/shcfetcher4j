@@ -10,4 +10,4 @@ status_split_parts=60
 
 # TIME ZONE 
 
-time_zone=8
+ahead_of_time=10
