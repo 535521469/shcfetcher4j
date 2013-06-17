@@ -34,7 +34,6 @@ public class IautosDetailUtil {
 
 		fillContacterAndPhone(doc, ici, responseWrapper);
 
-
 		Element detailDivTag = doc.select("#car_detail").first();
 		fillPriceAndStatus(detailDivTag, ici, responseWrapper);
 		fillDisplacementAndGearbox(detailDivTag, ici, responseWrapper);
@@ -183,15 +182,27 @@ public class IautosDetailUtil {
 	public static IautosStatusCode getStatusCode(String priceString,
 			String status) {
 
+		// if (status.equals(priceString)) {
+		// return IautosStatusCode.STATUS_TYPE_FOR_SALE;
+		// } else if ("\u5DF2\u552E".equals(status)) {
+		// // sold yi shou
+		// return IautosStatusCode.STATUS_TYPE_SOLD;
+		// } else if ("\u903E\u671F".equals(status)) {
+		// // overdue yu qi
+		// return IautosStatusCode.STATUS_TYPE_OVERDUE;
+		// } else if ("\u903E\u671F".equals(status)) {
+		// // cancel che xiao
+		// return IautosStatusCode.STATUS_TYPE_CANCEL;
+		// }
 		if (status.equals(priceString)) {
 			return IautosStatusCode.STATUS_TYPE_FOR_SALE;
-		} else if ("\u5DF2\u552E".equals(status)) {
-			// sold yi shou
-			return IautosStatusCode.STATUS_TYPE_SOLD;
-		} else if ("\u903E\u671F".equals(status)) {
-			// overdue yu qi
-			return IautosStatusCode.STATUS_TYPE_OVERDUE;
+		} else {
+			try {
+				return IautosStatusCode.getByDesc(status);
+			} catch (IllegalArgumentException e) {
+			}
 		}
+
 		return null;
 	}
 
@@ -228,6 +239,11 @@ public class IautosDetailUtil {
 		} else {
 			throw new IllegalArgumentException("Status ");
 		}
+	}
+
+	public static boolean isDuringValidate(Element doc) {
+		String bodyString = doc.select("body").text();
+		return StringUtils.isBlank(bodyString);
 	}
 
 	public static String getPriceLiteral(Element detail) {

@@ -83,6 +83,13 @@ public class IautosDetailCallback extends Callback {
 		fetched.put(FetcherConstants.Fetcher, fetchers);
 
 		Document doc = this.getResponseWrapper().getDoc();
+		
+		if (IautosDetailUtil.isDuringValidate(doc)) {
+			getLogger().info(
+					"body is blank:" + this.getResponseWrapper().getUrl());
+			return null;
+		}
+		
 		IautosCarInfo ici = (IautosCarInfo) this.getResponseWrapper()
 				.getContext().get(IautosConstant.CAR_INFO);
 

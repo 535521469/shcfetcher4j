@@ -55,11 +55,12 @@ public class IautosCarInfoDao {
 
 	@SuppressWarnings("unchecked")
 	public List<IautosCarInfo> listByStatusCodeAndLastActiveDateTime(
-			IautosStatusCode statusCode, Date lastActiveDate, Session session) {
+			IautosStatusCode statusCode, String lastActiveDate, Session session) {
 		Query query = session
 				.createQuery("from IautosCarInfo where statusType=:statusType and lastActiveDate<=:lastActiveDate");
+//				.createQuery("from IautosCarInfo where statusType=:statusType and lastActiveDate<='2013-06-17 15:38:46'");
 		query.setInteger("statusType", statusCode.getCode());
-		query.setDate("lastActiveDate", lastActiveDate);
+		query.setString("lastActiveDate", lastActiveDate);
 		List<IautosCarInfo> carInfos = (List<IautosCarInfo>) query.list();
 		return carInfos;
 	}

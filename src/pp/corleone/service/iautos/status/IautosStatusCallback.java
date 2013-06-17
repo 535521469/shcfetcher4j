@@ -45,6 +45,12 @@ public class IautosStatusCallback extends Callback {
 		IautosCarInfo ici = (IautosCarInfo) this.getResponseWrapper()
 				.getContext().get(IautosConstant.CAR_INFO);
 
+		if (IautosDetailUtil.isDuringValidate(doc)) {
+			getLogger().info(
+					"body is blank:" + this.getResponseWrapper().getUrl());
+			return null;
+		}
+
 		Element detailDivTag = doc.select("#car_detail").first();
 
 		String priceLiteral = IautosDetailUtil.getPriceLiteral(detailDivTag);
@@ -52,6 +58,11 @@ public class IautosStatusCallback extends Callback {
 
 		IautosStatusCode code = IautosDetailUtil.getStatusCode(priceLiteral,
 				statusLiteral);
+
+		if (null == code) {
+			throw new IllegalArgumentException("status type:" + statusLiteral
+					+ ";" + priceLiteral);
+		}
 
 		Transaction tx = this.getSession().beginTransaction();
 
@@ -77,5 +88,4 @@ public class IautosStatusCallback extends Callback {
 
 		return null;
 	}
-
 }

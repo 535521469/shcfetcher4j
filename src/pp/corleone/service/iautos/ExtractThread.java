@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,9 +47,18 @@ public class ExtractThread extends Thread {
 
 					Map<String, Collection<?>> result = null;
 					try {
-						result = f.get();
+						result = f.get(10, TimeUnit.SECONDS);
 					} catch (ExecutionException e) {
 						e.printStackTrace();
+						getLogger().error(
+								"extract error :"
+										+ cb.getResponseWrapper().getUrl());
+						continue;
+					} catch (TimeoutException e) {
+						e.printStackTrace();
+						getLogger().error(
+								"extract error :"
+										+ cb.getResponseWrapper().getUrl());
 						continue;
 					}
 

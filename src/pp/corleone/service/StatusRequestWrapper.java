@@ -4,9 +4,9 @@ import java.util.Date;
 import java.util.concurrent.Delayed;
 import java.util.concurrent.TimeUnit;
 
+import pp.corleone.ConfigManager;
 import pp.corleone.domain.iautos.IautosCarInfo;
 import pp.corleone.service.iautos.IautosConstant;
-import pp.corleone.service.iautos.IautosResource;
 
 public class StatusRequestWrapper implements Delayed {
 
@@ -63,8 +63,9 @@ public class StatusRequestWrapper implements Delayed {
 
 		long now = new Date().getTime();
 
-		String configStatusDelay = IautosResource.cm.getConfigItem(
-				IautosConstant.STATUS_DELAY, "600");
+		// 28800 seconds = 8 hours
+		String configStatusDelay = ConfigManager.getInstance().getConfigItem(
+				IautosConstant.STATUS_DELAY, "28800");
 
 		int statusDelay = Integer.valueOf(configStatusDelay);
 

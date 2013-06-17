@@ -100,7 +100,8 @@ public class IautosCarInfo extends CarInfo implements Cloneable, Serializable {
 
 	public enum IautosStatusCode {
 		STATUS_TYPE_FOR_SALE(1, "\u5F85\u552E"), STATUS_TYPE_SOLD(4,
-				"\u5DF2\u552E"), STATUS_TYPE_OVERDUE(8, "\u903E\u671F");
+				"\u5DF2\u552E"), STATUS_TYPE_OVERDUE(8, "\u903E\u671F"), STATUS_TYPE_CANCEL(
+				16, "\u64A4\u9500");
 
 		private int code;
 		private String desc;
@@ -111,6 +112,30 @@ public class IautosCarInfo extends CarInfo implements Cloneable, Serializable {
 
 		public String getDesc() {
 			return desc;
+		}
+
+		public static IautosStatusCode getByDesc(String desc) {
+			if (null == desc) {
+				throw new IllegalArgumentException(
+						"IautosStatusCode desc is null");
+			}
+			for (IautosStatusCode iautosStatusCode : IautosStatusCode.values()) {
+				if (iautosStatusCode.getDesc().equals(desc)) {
+					return iautosStatusCode;
+				}
+			}
+			throw new IllegalArgumentException(desc
+					+ " match non IautosStatusCode");
+		}
+
+		public static IautosStatusCode getByCode(int code) {
+			for (IautosStatusCode iautosStatusCode : IautosStatusCode.values()) {
+				if (iautosStatusCode.getCode() == code) {
+					return iautosStatusCode;
+				}
+			}
+			throw new IllegalArgumentException(code
+					+ " match non IautosStatusCode");
 		}
 
 		private IautosStatusCode(int code, String desc) {

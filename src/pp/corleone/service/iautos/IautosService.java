@@ -13,6 +13,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.hibernate.Session;
 import org.hibernate.Transaction;
+import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,8 +40,9 @@ import pp.corleone.service.iautos.status.IautosStatusFetcher;
 public class IautosService extends Service {
 
 	public static void main(String[] args) {
-		IautosService is = new IautosService();
 
+		IautosService is = new IautosService();
+		is.getLogger().info("start-------------------");
 		is.init();
 		is.fetch();
 		is.extract();
@@ -50,12 +52,17 @@ public class IautosService extends Service {
 
 	public void init() {
 
-		new StatusFetcherManager().run();
-
 		ScheduledThreadPoolExecutor pe = (ScheduledThreadPoolExecutor) Executors
-				.newScheduledThreadPool(1);
+				.newScheduledThreadPool(2);
 		ChangeCityFetcherManager ccf = this.new ChangeCityFetcherManager();
 		pe.scheduleAtFixedRate(ccf, 0, 3600, TimeUnit.SECONDS);
+
+		StatusFetcherManager sfm = this.new StatusFetcherManager();
+
+		long delay = sfm.getSplitPart() > 1 ? sfm.getStatusDelay()
+				/ sfm.getSplitPart() : sfm.getStatusDelay();
+
+		pe.scheduleAtFixedRate(sfm, 0, delay, TimeUnit.SECONDS);
 
 	}
 
@@ -85,15 +92,14 @@ public class IautosService extends Service {
 		@Override
 		public void run() {
 
-			ConfigManager cm = ConfigManager.getInstance();
-
 			try {
 				TimeUnit.SECONDS.sleep(1);
 			} catch (InterruptedException e1) {
 				e1.printStackTrace();
 			}
 
-			String city = cm.getConfigItem(IautosConstant.CITIES, null);
+			String city = ConfigManager.getInstance().getConfigItem(
+					IautosConstant.CITIES, null);
 
 			this.getLogger().info("get cities config ->" + city);
 			Set<String> cities = new HashSet<String>(Arrays.asList(city
@@ -170,10 +176,44 @@ public class IautosService extends Service {
 			return LoggerFactory.getLogger(this.getClass());
 		}
 
+		int splitPart;
+		int statusDelay;
+
+		public int getSplitPart() {
+			return splitPart;
+		}
+
+		public void setSplitPart(int splitPart) {
+			this.splitPart = splitPart;
+		}
+
+		public int getStatusDelay() {
+			return statusDelay;
+		}
+
+		public void setStatusDelay(int statusDelay) {
+			this.statusDelay = statusDelay;
+		}
+
+		{
+			this.setCarDao(new IautosCarInfoDao(this.getSession()));
+
+			String splitPartString = ConfigManager.getInstance().getConfigItem(
+					IautosConstant.STATUS_SPLIT_PARTS,
+					String.valueOf(Runtime.getRuntime().availableProcessors())
+							.intern());
+
+			String statusDelayString = ConfigManager.getInstance()
+					.getConfigItem(IautosConstant.STATUS_DELAY, "28800");
+
+			splitPart = Integer.valueOf(splitPartString);
+			statusDelay = Integer.valueOf(statusDelayString);
+
+		}
+
 		private IautosCarInfoDao carDao;
 
 		public StatusFetcherManager() {
-			this.setCarDao(new IautosCarInfoDao(this.getSession()));
 		}
 
 		public Session getSession() {
@@ -191,14 +231,22 @@ public class IautosService extends Service {
 		@Override
 		public void run() {
 
-//			Date now = new Date();
-			// TODO : use joda to convert date
+			DateTime dateTime = new DateTime();
+			if (this.getSplitPart() > 1) {
+				dateTime = dateTime.minusSeconds(this.getStatusDelay());
+				dateTime = dateTime.plusSeconds(this.getStatusDelay()
+						/ this.getSplitPart());
+			}
+
+			this.getLogger().info(dateTime.toString("yyyy-MM-dd HH:mm:ss"));
+
 			Transaction tx = this.getSession().beginTransaction();
 
 			List<IautosCarInfo> icis = null;
 			try {
-				icis = this.getCarDao().listByStatusCode(
+				icis = this.getCarDao().listByStatusCodeAndLastActiveDateTime(
 						IautosStatusCode.STATUS_TYPE_FOR_SALE,
+						dateTime.toString("yyyy-MM-dd HH:mm:ss"),
 						this.getSession());
 				tx.commit();
 			} catch (Exception e) {
