@@ -46,7 +46,7 @@ public class IautosService extends Service {
 		is.init();
 		is.fetch();
 		is.extract();
-//		is.statusFetch();
+		is.statusFetch();
 
 	}
 
