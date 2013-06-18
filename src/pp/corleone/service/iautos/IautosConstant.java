@@ -4,7 +4,13 @@ public class IautosConstant {
 
 	public final static String homePage = "http://www.iautos.cn/";
 	public final static String searchPage = "http://so.iautos.cn/";
+
 	public final static String CITIES = "cities";
+
+	public final static String ONGOING_FLAG = "ongoing_flag";
+
+	public final static String STATUS_CHECK_FLAG = "status_check_flag";
+	public final static String ONGOING_CYCLE_DELAY = "ongoing_cycle_delay";
 
 	public final static String STATUS_DELAY = "status_delay";
 	public final static String STATUS_SPLIT_PARTS = "status_split_parts";

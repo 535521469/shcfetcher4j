@@ -1,5 +1,7 @@
 package pp.corleone.service.iautos.detail;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import org.apache.commons.lang.StringUtils;
@@ -96,6 +98,26 @@ public class IautosDetailUtil {
 		String color = StringUtils.replace(colorTdTag.text(),
 				"\u8F66\u8EAB\u989C\u8272\uFF1A", "").split("\uFF0C")[0];
 		ici.setColor(color);
+
+		if (null == ici.getDeclareDate()) {
+
+			/* update date */
+			Element updateDateTdTag = basicTrTags.get(0).select("td").get(1);
+			// \u66F4\u65B0\u65F6\u95F4\uFF1A : update date and a chinese colon
+			String updateDateString = StringUtils.replace(
+					updateDateTdTag.text(), "\u66F4\u65B0\u65F6\u95F4\uFF1A",
+					"");
+
+			try {
+				Date updateDate = new SimpleDateFormat("yyyy-MM-dd")
+						.parse(updateDateString);
+				if (ici.getDeclareDate() == null) {
+					ici.setDeclareDate(updateDate);
+				}
+			} catch (ParseException e) {
+				e.printStackTrace();
+			}
+		}
 
 		/* shang pai shi jian or chu deng ri qi */
 		Element licensedDateTdTagElement = basicTrTags.get(4).select("td")

@@ -27,7 +27,7 @@ public class StatusThread extends Thread {
 
 				if (null == statusRequestWrapper) {
 					getLogger().info(
-							"non check , queue size :"
+							"not reach check time, queue size :"
 									+ IautosResource.statusQueue.size());
 					continue;
 				}

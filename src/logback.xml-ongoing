@@ -3,7 +3,7 @@
 	<appender name="FILE"
 		class="ch.qos.logback.core.rolling.RollingFileAppender">
 		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-			<fileNamePattern>/usr/log/%d{yyyyMMdd}shcfetcher4j.log</fileNamePattern>
+			<fileNamePattern>/usr/log/%d{yyyyMMdd}shcfetcher4j-ongoing.log</fileNamePattern>
 		</rollingPolicy>
 
 		<encoder>

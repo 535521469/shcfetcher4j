@@ -53,7 +53,7 @@ public class FetcherThread extends Thread {
 				}
 
 				Future<ResponseWrapper> fu = pe.submit(fetcher);
-				
+
 				try {
 					ResponseWrapper responseWrapper = fu.get();
 					if (null != responseWrapper) {

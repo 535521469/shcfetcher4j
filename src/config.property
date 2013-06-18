@@ -1,13 +1,15 @@
-# \u957F\u6625,\u5317\u4EAC,\u4E0A\u6D77,\u5357\u4EAC,\u6210\u90FD,\u91CD\u5E86,\u6DF1\u5733,\u6606\u660E,\u798F\u5DDE,\u54C8\u5C14\u6EE8,\u5927\u8FDE,\u957F\u6C99,\u5929\u6D25,\u897F\u5B89,\u6C88\u9633,\u53A6\u95E8,\u5E7F\u5DDE,\u9752\u5C9B,\u82CF\u5DDE,\u6D4E\u5357,\u6B66\u6C49,\u676D\u5DDE
-
-
+# cities list , unicode 
 cities=\u957F\u6625,\u5317\u4EAC,\u4E0A\u6D77,\u5357\u4EAC,\u6210\u90FD,\u91CD\u5E86,\u6DF1\u5733,\u6606\u660E,\u798F\u5DDE,\u54C8\u5C14\u6EE8,\u5927\u8FDE,\u957F\u6C99,\u5929\u6D25,\u897F\u5B89,\u6C88\u9633,\u53A6\u95E8,\u5E7F\u5DDE,\u9752\u5C9B,\u82CF\u5DDE,\u6D4E\u5357,\u6B66\u6C49,\u676D\u5DDE
 
 # uom : second ; 28800s = 8h
+ongoing_cycle_delay=7200
+
 status_delay=28800
+status_split_parts=48
+ahead_of_time=300
 
-status_split_parts=60
+ongoing_flag=0
+status_check_flag=1
 
-# TIME ZONE 
-
-ahead_of_time=10
+uom : millseconds
+# fetcher_download_delay=200 -- unused

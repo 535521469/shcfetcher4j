@@ -41,29 +41,48 @@ public class IautosService extends Service {
 
 	public static void main(String[] args) {
 
+		ConfigManager configManager = ConfigManager.getInstance();
+
 		IautosService is = new IautosService();
+
 		is.getLogger().info("start-------------------");
-		is.init();
+
+		String statusCheckFlag = configManager.getConfigItem(
+				IautosConstant.STATUS_CHECK_FLAG, "1");
+		String fetchFlag = configManager.getConfigItem(
+				IautosConstant.ONGOING_FLAG, "1");
+
+		if ("1".equals(fetchFlag)) {
+			is.initOnGoing();
+		}
+
+		if ("1".equals(statusCheckFlag)) {
+			is.initStatusCheck();
+			is.statusFetch();
+		}
+
 		is.fetch();
 		is.extract();
-		is.statusFetch();
 
 	}
 
-	public void init() {
-
+	public void initOnGoing() {
 		ScheduledThreadPoolExecutor pe = (ScheduledThreadPoolExecutor) Executors
-				.newScheduledThreadPool(2);
+				.newScheduledThreadPool(1);
 		ChangeCityFetcherManager ccf = this.new ChangeCityFetcherManager();
-		pe.scheduleAtFixedRate(ccf, 0, 3600, TimeUnit.SECONDS);
+		String ongoingCycleDelayString = ConfigManager.getInstance()
+				.getConfigItem(IautosConstant.ONGOING_CYCLE_DELAY, "86400");
+		long ongoingCycleDelay = Long.valueOf(ongoingCycleDelayString);
+		pe.scheduleAtFixedRate(ccf, 0, ongoingCycleDelay, TimeUnit.SECONDS);
+	}
 
+	public void initStatusCheck() {
+		ScheduledThreadPoolExecutor pe = (ScheduledThreadPoolExecutor) Executors
+				.newScheduledThreadPool(1);
 		StatusFetcherManager sfm = this.new StatusFetcherManager();
-
 		long delay = sfm.getSplitPart() > 1 ? sfm.getStatusDelay()
 				/ sfm.getSplitPart() : sfm.getStatusDelay();
-
 		pe.scheduleAtFixedRate(sfm, 0, delay, TimeUnit.SECONDS);
-
 	}
 
 	@Override
@@ -91,12 +110,6 @@ public class IautosService extends Service {
 
 		@Override
 		public void run() {
-
-			try {
-				TimeUnit.SECONDS.sleep(1);
-			} catch (InterruptedException e1) {
-				e1.printStackTrace();
-			}
 
 			String city = ConfigManager.getInstance().getConfigItem(
 					IautosConstant.CITIES, null);
@@ -231,6 +244,9 @@ public class IautosService extends Service {
 		@Override
 		public void run() {
 
+			this.getLogger()
+					.info("...... query carinfo for status check......");
+
 			DateTime dateTime = new DateTime();
 			if (this.getSplitPart() > 1) {
 				dateTime = dateTime.minusSeconds(this.getStatusDelay());
@@ -238,7 +254,9 @@ public class IautosService extends Service {
 						/ this.getSplitPart());
 			}
 
-			this.getLogger().info(dateTime.toString("yyyy-MM-dd HH:mm:ss"));
+			this.getLogger().info(
+					"...... before last active date time:"
+							+ dateTime.toString("yyyy-MM-dd HH:mm:ss"));
 
 			Transaction tx = this.getSession().beginTransaction();
 
@@ -276,9 +294,8 @@ public class IautosService extends Service {
 				}
 				IautosResource.statusQueue.addAll(statusRequestWrappers);
 				this.getLogger().info(
-						"add status:" + statusRequestWrappers.size());
+						"...... add status:" + statusRequestWrappers.size());
 			}
-
 		}
 	}
 }
