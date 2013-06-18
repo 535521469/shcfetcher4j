@@ -42,4 +42,9 @@ public class ConfigManager {
 		return m_props.containsKey(key) ? m_props.getProperty(key) : defaultVal;
 	}
 
+	public final int getConfigItem(String key, int defaultVal) {
+		return m_props.containsKey(key) ? Integer.valueOf(m_props
+				.getProperty(key)) : defaultVal;
+	}
+
 }

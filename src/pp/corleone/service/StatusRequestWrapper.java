@@ -63,13 +63,10 @@ public class StatusRequestWrapper implements Delayed {
 
 		long now = new Date().getTime();
 
-		String configStatusDelay = ConfigManager.getInstance().getConfigItem(
-				IautosConstant.STATUS_DELAY, "28800");
-		String configStatusAheadOfTime = ConfigManager.getInstance()
-				.getConfigItem(IautosConstant.AHEAD_OF_TIME, "600");
-
-		int statusDelay = Integer.valueOf(configStatusDelay);
-		int statusAheadOfTime = Integer.valueOf(configStatusAheadOfTime);
+		long statusDelay = ConfigManager.getInstance().getConfigItem(
+				IautosConstant.STATUS_DELAY, 28800);
+		int statusAheadOfTime = ConfigManager.getInstance().getConfigItem(
+				IautosConstant.AHEAD_OF_TIME, 600);
 
 		long seconds = TimeUnit.SECONDS.convert((lastActiveDateTime - now),
 				TimeUnit.MILLISECONDS) + statusDelay - statusAheadOfTime;

@@ -70,9 +70,8 @@ public class IautosService extends Service {
 		ScheduledThreadPoolExecutor pe = (ScheduledThreadPoolExecutor) Executors
 				.newScheduledThreadPool(1);
 		ChangeCityFetcherManager ccf = this.new ChangeCityFetcherManager();
-		String ongoingCycleDelayString = ConfigManager.getInstance()
-				.getConfigItem(IautosConstant.ONGOING_CYCLE_DELAY, "86400");
-		long ongoingCycleDelay = Long.valueOf(ongoingCycleDelayString);
+		long ongoingCycleDelay = Long.valueOf(ConfigManager.getInstance()
+				.getConfigItem(IautosConstant.ONGOING_CYCLE_DELAY, 86400));
 		pe.scheduleAtFixedRate(ccf, 0, ongoingCycleDelay, TimeUnit.SECONDS);
 	}
 
@@ -211,16 +210,14 @@ public class IautosService extends Service {
 		{
 			this.setCarDao(new IautosCarInfoDao(this.getSession()));
 
-			String splitPartString = ConfigManager.getInstance().getConfigItem(
-					IautosConstant.STATUS_SPLIT_PARTS,
-					String.valueOf(Runtime.getRuntime().availableProcessors())
-							.intern());
+			ConfigManager configManager = ConfigManager.getInstance();
 
-			String statusDelayString = ConfigManager.getInstance()
-					.getConfigItem(IautosConstant.STATUS_DELAY, "28800");
+			splitPart = configManager.getConfigItem(
+					IautosConstant.STATUS_SPLIT_PARTS, Runtime.getRuntime()
+							.availableProcessors());
 
-			splitPart = Integer.valueOf(splitPartString);
-			statusDelay = Integer.valueOf(statusDelayString);
+			statusDelay = configManager.getConfigItem(
+					IautosConstant.STATUS_DELAY, 28800);
 
 		}
 

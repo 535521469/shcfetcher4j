@@ -8,6 +8,7 @@ import java.util.concurrent.TimeUnit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import pp.corleone.ConfigManager;
 import pp.corleone.service.Callback;
 import pp.corleone.service.Fetcher;
 import pp.corleone.service.ResponseWrapper;
@@ -25,9 +26,14 @@ public class FetcherThread extends Thread {
 
 		Fetcher fetcher = null;
 
+		int fetcher_idle_sleep = ConfigManager.getInstance().getConfigItem(
+				IautosConstant.FETCHER_IDLE_SLEEP, 30);
+
 		while (!isInterrupted()) {
 			try {
-				fetcher = IautosResource.fetchQueue.poll(30, TimeUnit.SECONDS);
+
+				fetcher = IautosResource.fetchQueue.poll(fetcher_idle_sleep,
+						TimeUnit.SECONDS);
 				if (null == fetcher) {
 					getLogger().info("non fetchable ...");
 					continue;

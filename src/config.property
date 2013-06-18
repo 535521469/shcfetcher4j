@@ -5,11 +5,21 @@ cities=\u957F\u6625,\u5317\u4EAC,\u4E0A\u6D77,\u5357\u4EAC,\u6210\u90FD,\u91CD\u
 ongoing_cycle_delay=7200
 
 status_delay=28800
+
 status_split_parts=48
+
+# default is 300 seconds
 ahead_of_time=300
 
-ongoing_flag=0
+ongoing_flag=1
+
 status_check_flag=1
 
 uom : millseconds
 # fetcher_download_delay=200 -- unused
+
+# fetcher is idle , how long sleep once a time . uom seconds
+fetcher_idle_sleep=60
+
+# status carryer is idle , how long sleep once a time . uom seconds , default is ahead_of_time/10
+status_carrier_idle_sleep=60
