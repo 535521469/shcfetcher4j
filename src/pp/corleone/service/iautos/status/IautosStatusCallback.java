@@ -15,7 +15,7 @@ import pp.corleone.domain.iautos.IautosCarInfo;
 import pp.corleone.domain.iautos.IautosCarInfo.IautosStatusCode;
 import pp.corleone.service.Callback;
 import pp.corleone.service.iautos.IautosConstant;
-import pp.corleone.service.iautos.detail.IautosDetailUtil;
+import pp.corleone.service.iautos.detail.IautosDetailExtractUtil;
 
 public class IautosStatusCallback extends Callback {
 
@@ -45,7 +45,7 @@ public class IautosStatusCallback extends Callback {
 		IautosCarInfo ici = (IautosCarInfo) this.getResponseWrapper()
 				.getContext().get(IautosConstant.CAR_INFO);
 
-		if (IautosDetailUtil.isDuringValidate(doc)) {
+		if (IautosDetailExtractUtil.isDuringValidate(doc)) {
 			getLogger().info(
 					"body is blank:" + this.getResponseWrapper().getUrl());
 			return null;
@@ -53,10 +53,10 @@ public class IautosStatusCallback extends Callback {
 
 		Element detailDivTag = doc.select("#car_detail").first();
 
-		String priceLiteral = IautosDetailUtil.getPriceLiteral(detailDivTag);
-		String statusLiteral = IautosDetailUtil.getStatusLiteral(detailDivTag);
+		String priceLiteral = IautosDetailExtractUtil.getPriceLiteral(detailDivTag);
+		String statusLiteral = IautosDetailExtractUtil.getStatusLiteral(detailDivTag);
 
-		IautosStatusCode code = IautosDetailUtil.getStatusCode(priceLiteral,
+		IautosStatusCode code = IautosDetailExtractUtil.getStatusCode(priceLiteral,
 				statusLiteral);
 
 		if (null == code) {

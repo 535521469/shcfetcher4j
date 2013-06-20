@@ -79,9 +79,8 @@ public class IautosService extends Service {
 		ScheduledThreadPoolExecutor pe = (ScheduledThreadPoolExecutor) Executors
 				.newScheduledThreadPool(1);
 		StatusFetcherManager sfm = this.new StatusFetcherManager();
-		long delay = sfm.getSplitPart() > 1 ? sfm.getStatusDelay()
-				/ sfm.getSplitPart() : sfm.getStatusDelay();
-		pe.scheduleAtFixedRate(sfm, 0, delay, TimeUnit.SECONDS);
+		pe.scheduleAtFixedRate(sfm, 0, sfm.getStatusCheckRange(),
+				TimeUnit.SECONDS);
 	}
 
 	@Override
@@ -188,15 +187,15 @@ public class IautosService extends Service {
 			return LoggerFactory.getLogger(this.getClass());
 		}
 
-		int splitPart;
+		int statusCheckRange;
 		int statusDelay;
 
-		public int getSplitPart() {
-			return splitPart;
+		public int getStatusCheckRange() {
+			return statusCheckRange;
 		}
 
-		public void setSplitPart(int splitPart) {
-			this.splitPart = splitPart;
+		public void setStatusCheckRange(int statusCheckRange) {
+			this.statusCheckRange = statusCheckRange;
 		}
 
 		public int getStatusDelay() {
@@ -212,8 +211,8 @@ public class IautosService extends Service {
 
 			ConfigManager configManager = ConfigManager.getInstance();
 
-			splitPart = configManager.getConfigItem(
-					IautosConstant.STATUS_SPLIT_PARTS, Runtime.getRuntime()
+			statusCheckRange = configManager.getConfigItem(
+					IautosConstant.STATUS_CHECK_RANGE, Runtime.getRuntime()
 							.availableProcessors());
 
 			statusDelay = configManager.getConfigItem(
@@ -245,10 +244,9 @@ public class IautosService extends Service {
 					.info("...... query carinfo for status check......");
 
 			DateTime dateTime = new DateTime();
-			if (this.getSplitPart() > 1) {
+			if (this.getStatusCheckRange() > 1) {
 				dateTime = dateTime.minusSeconds(this.getStatusDelay());
-				dateTime = dateTime.plusSeconds(this.getStatusDelay()
-						/ this.getSplitPart());
+				dateTime = dateTime.plusSeconds(this.getStatusCheckRange());
 			}
 
 			this.getLogger().info(

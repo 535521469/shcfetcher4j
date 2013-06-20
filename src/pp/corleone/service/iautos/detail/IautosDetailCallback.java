@@ -83,13 +83,13 @@ public class IautosDetailCallback extends Callback {
 		fetched.put(FetcherConstants.Fetcher, fetchers);
 
 		Document doc = this.getResponseWrapper().getDoc();
-		
-		if (IautosDetailUtil.isDuringValidate(doc)) {
+
+		if (IautosDetailExtractUtil.isDuringValidate(doc)) {
 			getLogger().info(
 					"body is blank:" + this.getResponseWrapper().getUrl());
 			return null;
 		}
-		
+
 		IautosCarInfo ici = (IautosCarInfo) this.getResponseWrapper()
 				.getContext().get(IautosConstant.CAR_INFO);
 
@@ -105,7 +105,7 @@ public class IautosDetailCallback extends Callback {
 				// check if shop is exist
 
 				// get shop url
-				String shopUrl = IautosDetailUtil.getSellerUrl(divTag,
+				String shopUrl = IautosDetailExtractUtil.getSellerUrl(divTag,
 						this.getResponseWrapper());
 				// String shopUrl = "http://reallycar.iautos.cn/";
 
@@ -126,6 +126,11 @@ public class IautosDetailCallback extends Callback {
 						getLogger().debug(
 								"shop already exist " + isi.getSeqID() + ","
 										+ isi.getShopUrl());
+
+						if (null == isi.getShopPhone()) {
+							isi.setShopPhone(ici.getContacterPhone());
+						}
+
 					} else {
 						// add shop fetcher
 						fetchers.add(sellerFetcher);
@@ -133,9 +138,11 @@ public class IautosDetailCallback extends Callback {
 						isi = new IautosSellerInfo();
 						isi.setShopUrl(ici.getShopUrl());
 
-						// save to db
-						// this.getSellerDao().addShopInfo(isi,
-						// this.getSession());
+						if (sellerFetcher.isIgnore()) {
+							// if seller fetch will ignore
+							// use the contacter phone as shop phone
+							isi.setShopPhone(ici.getContacterPhone());
+						}
 					}
 
 					// set shop
@@ -148,7 +155,8 @@ public class IautosDetailCallback extends Callback {
 								+ this.getResponseWrapper().getUrl());
 			}
 
-			IautosDetailUtil.getDetailItem(doc, ici, this.getResponseWrapper());
+			IautosDetailExtractUtil.getDetailItem(doc, ici,
+					this.getResponseWrapper());
 			// this.getCarDao().addCarInfo(ici);
 
 			if (null == this.getCarDao().getByCarUrlAndDeclareDate(

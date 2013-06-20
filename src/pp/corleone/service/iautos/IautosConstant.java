@@ -16,7 +16,7 @@ public class IautosConstant {
 	public final static String STATUS_CARRIER_IDLE_SLEEP = "status_carrIer_idle_sleep";
 
 	public final static String STATUS_DELAY = "status_delay";
-	public final static String STATUS_SPLIT_PARTS = "status_split_parts";
+	public final static String STATUS_CHECK_RANGE = "status_check_range";
 	public final static String AHEAD_OF_TIME = "ahead_of_time";
 
 	public final static String LIST = "LIST";

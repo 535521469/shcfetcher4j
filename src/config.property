@@ -6,7 +6,7 @@ ongoing_cycle_delay=7200
 
 status_delay=28800
 
-status_split_parts=48
+status_check_range=600
 
 # default is 300 seconds
 ahead_of_time=300
@@ -23,3 +23,4 @@ fetcher_idle_sleep=60
 
 # status carryer is idle , how long sleep once a time . uom seconds , default is ahead_of_time/10
 status_carrier_idle_sleep=60
+

@@ -2,6 +2,8 @@ package pp.corleone.domain.iautos;
 
 import java.io.Serializable;
 
+import org.apache.commons.lang.builder.ToStringBuilder;
+
 import pp.corleone.domain.CarInfo;
 
 public class IautosCarInfo extends CarInfo implements Cloneable, Serializable {
@@ -143,6 +145,14 @@ public class IautosCarInfo extends CarInfo implements Cloneable, Serializable {
 			this.desc = desc;
 		}
 
+	}
+
+	@Override
+	public String toString() {
+
+		return new ToStringBuilder(this).append("url", this.getSourceType())
+				.append("contacter phone", this.getContacterPhone())
+				.append("contacter", this.getContacter()).toString();
 	}
 
 }

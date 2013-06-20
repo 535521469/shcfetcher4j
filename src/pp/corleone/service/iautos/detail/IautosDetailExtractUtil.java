@@ -14,10 +14,10 @@ import pp.corleone.domain.iautos.IautosCarInfo;
 import pp.corleone.domain.iautos.IautosCarInfo.IautosStatusCode;
 import pp.corleone.service.ResponseWrapper;
 
-public class IautosDetailUtil {
+public class IautosDetailExtractUtil {
 
 	protected static final Logger getLogger() {
-		return LoggerFactory.getLogger(IautosDetailUtil.class);
+		return LoggerFactory.getLogger(IautosDetailExtractUtil.class);
 	}
 
 	public static String getSellerUrl(Element ele,
@@ -57,14 +57,50 @@ public class IautosDetailUtil {
 
 		if (null != contacterPhoneDivTag) {
 			String contacterAndPhone = contacterPhoneDivTag.text();
-
 			// \uFF1A : colon , fen hao
 			String[] contacterAndPhoneArray = contacterAndPhone.split("\uFF1A");
 			if (contacterAndPhoneArray.length > 1) {
+				// contains contacter and phone split with colon
 				ici.setContacter(contacterAndPhoneArray[0]);
-				ici.setContacterPhone(contacterAndPhoneArray[1]);
+
+				String contacterPhoneString = contacterAndPhoneArray[1];
+				
+				contacterPhoneString = StringUtils.replace(
+						contacterPhoneString, ",", " ");
+				// \uFF0C : chinese comma
+				contacterPhoneString = StringUtils.replace(
+						contacterPhoneString, "\uFF0C", " ");
+				ici.setContacterPhone(contacterPhoneString);
 			} else {
-				ici.setContacterPhone(contacterAndPhone);
+				contacterAndPhone = StringUtils.replace(contacterAndPhone,
+						"\uFF1A", "");
+				if (contacterAndPhone.length() > 1) {
+					String firstString = contacterAndPhone.substring(0, 1);
+					if (StringUtils.isNumeric(firstString)) {
+						// only contains phone , not exists contacter
+						ici.setContacterPhone(contacterAndPhone);
+					} else {
+						// contains contacter
+						String lastString = contacterAndPhone
+								.substring(contacterAndPhone.length() - 1);
+						if (StringUtils.isNumeric(lastString)) {
+							// contains contacter and phone both
+							// find first numberic string index
+							int idx = StringUtils.indexOfAny(contacterAndPhone,
+									new String[] { "1", "2", "3", "4", "5",
+											"6", "7", "8", "9", "0" });
+							ici.setContacter(contacterAndPhone
+									.substring(0, idx));
+							ici.setContacterPhone(contacterAndPhone
+									.substring(idx));
+
+						} else {
+							ici.setContacter(contacterAndPhone);
+						}
+					}
+
+				}
+
 			}
 		} else {
 			getLogger().warn(
@@ -245,6 +281,9 @@ public class IautosDetailUtil {
 		}
 	}
 
+	/**
+	 * if the information is during review
+	 */
 	public static boolean isDuringValidate(Element doc) {
 		String bodyString = doc.select("body").text();
 		return StringUtils.isBlank(bodyString);
