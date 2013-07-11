@@ -71,7 +71,6 @@ public class IautosListCallback extends Callback {
 
 		Elements liCars = doc.select("div.carShow>ul>li");
 
-		IautosDetailCallback detailCallback = new IautosDetailCallback();
 
 		IautosCarInfo ici = (IautosCarInfo) this.getResponseWrapper()
 				.getReferRequestWrapper().getContext()
@@ -82,7 +81,7 @@ public class IautosListCallback extends Callback {
 			String detailUrl = aCar.attr("href");
 
 			RequestWrapper requestWrapper = new RequestWrapper(detailUrl,
-					detailCallback, this.getResponseWrapper()
+					new IautosDetailCallback(), this.getResponseWrapper()
 							.getReferRequestWrapper(), PriorityEnum.DETAIL);
 
 			IautosCarInfo newCarInfo = ici.clone();

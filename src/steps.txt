@@ -5,4 +5,4 @@
 	logback-test.xml : let application use logback.xml 
 3. rename file hibernate.cfg.xml-production to hibernate.cfg.xml : with step 2 , use production config 
 	it's easier to delete and rename than open and modify the content for me
-4. modify config.property set ongoing , status check 
+4. copy jar , modify set one config.property set ongoing and another set status check 
