@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.jsoup.nodes.Document;
@@ -84,7 +85,7 @@ public class IautosDetailCallback extends Callback {
 
 		Document doc = this.getResponseWrapper().getDoc();
 
-		if (IautosDetailExtractUtil.isDuringValidate(doc)) {
+		if (IautosDetailExtractUtil2.isDuringValidate(doc)) {
 			getLogger().info(
 					"body is blank:" + this.getResponseWrapper().getUrl());
 			return null;
@@ -98,16 +99,14 @@ public class IautosDetailCallback extends Callback {
 		Transaction tx = this.getSession().beginTransaction();
 		try {
 			IautosSellerInfo isi = null;
-			Element divTag = doc.select("div.box2>div.pjzl").first();
 
-			// if (divTag != null || true) {
-			if (divTag != null) {
-				// check if shop is exist
+			// get shop url
+			String shopUrl = IautosDetailExtractUtil2.getSellerUrl(doc,
+					this.getResponseWrapper());
 
-				// get shop url
-				String shopUrl = IautosDetailExtractUtil.getSellerUrl(divTag,
-						this.getResponseWrapper());
-				// String shopUrl = "http://reallycar.iautos.cn/";
+			// String shopUrl = "http://reallycar.iautos.cn/";
+
+			if (!StringUtils.isBlank(shopUrl)) {
 
 				if (shopUrl.trim().length() > 0
 						&& !shopUrl.trim().equals(
@@ -155,7 +154,7 @@ public class IautosDetailCallback extends Callback {
 								+ this.getResponseWrapper().getUrl());
 			}
 
-			IautosDetailExtractUtil.getDetailItem(doc, ici,
+			IautosDetailExtractUtil2.getDetailItem(doc, ici,
 					this.getResponseWrapper());
 			// this.getCarDao().addCarInfo(ici);
 

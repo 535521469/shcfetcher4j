@@ -1,0 +1,49 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC 
+	"-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+	"http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+<hibernate-mapping>
+
+	<class name="pp.corleone.domain.CarInfo" abstract="true">
+		<id name="seqID" column="SEQID" type="string">
+			<generator class="uuid.hex"></generator>
+		</id>
+
+		<property name="carSourceUrl" column="SourceUrl"></property>
+		<!-- <property name="shopUrl" column="ContacterURL"></property> -->
+		<property name="locate" column="CityName"></property>
+		<property name="sourceType" column="SourceType"></property>
+		<property name="sellerType" column="CarSourceType"></property>
+		<property name="gearbox" column="Gearbox"></property>
+		<property name="displacement" column="Displacement"></property>
+		<property name="roadHaul" column="RoadHaul"></property>
+		<property name="color" column="CarColor"></property>
+		<property name="contacterPhone" column="ContacterPhone"></property>
+		<property name="declareDate" column="DeclareDate"></property>
+		<property name="contacter" column="Contacter"></property>
+		<property name="price" column="Price"></property>
+		<property name="offlineDate" column="OffLineDateTime"></property>
+		<property name="lastActiveDate" column="LastActiveDateTime"></property>
+		<property name="fetchDate" column="FetchDateTime"></property>
+		<property name="title" column="Title"></property>
+		<property name="statusType" column="StatusType"></property>
+		<!-- <property name="sellerID" column="SellerID"></property> -->
+
+	</class>
+
+	<union-subclass name="pp.corleone.domain.iautos.IautosCarInfo"
+		table="CarInfo_Iautos" extends="pp.corleone.domain.CarInfo">
+		<property name="shopUrl" column="ContacterURL"></property>
+		<property name="licenseDate" column="LicenseDate"></property>
+		<property name="brand" column="Brand"></property>
+		<property name="manufacturer" column="Manufacturer"></property>
+		<property name="parkAddress" column="ParkAddress"></property>
+		<many-to-one column="sellerID" name="iautosSellerInfo"
+			class="pp.corleone.domain.iautos.IautosSellerInfo" cascade="save-update"
+			not-null="false" lazy="false">
+		</many-to-one>
+
+	</union-subclass>
+
+
+</hibernate-mapping>

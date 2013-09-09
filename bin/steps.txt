@@ -1,0 +1,8 @@
+1. package and export the source and get a jar for example iautos.v*.*.*_yyyyMMdd.jar
+	v*.*.* is version number , and yyyyMMdd is year month and day
+2. open the jar file use winrar or 7z . remove the follow files 
+	hibernate.cfg.xml 
+	logback-test.xml : let application use logback.xml 
+3. rename file hibernate.cfg.xml-production to hibernate.cfg.xml : with step 2 , use production config 
+	it's easier to delete and rename than open and modify the content for me
+4. copy jar , modify set one config.property set ongoing and another set status check 

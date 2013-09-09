@@ -1,0 +1,67 @@
+delimiter $$
+
+CREATE TABLE `SecondhandCar_Fundamental`.`CarInfo_Iautos` (
+  `SEQID` varchar(32) NOT NULL COMMENT '记录ID',
+  `CityName` varchar(64) DEFAULT NULL COMMENT '所属城市',
+  `SourceType` varchar(512) NOT NULL COMMENT '数据来源',
+  `Manufacturer` varchar(512) DEFAULT NULL COMMENT '生产厂商',
+  `Brand` varchar(128) default null comment '品牌',
+  `Gearbox` varchar(512) DEFAULT NULL COMMENT '变速箱',
+  `Displacement` varchar(512) DEFAULT NULL COMMENT '排量',
+  `LicenseDate` varchar(512) DEFAULT NULL COMMENT '上牌时间',
+  `CarColor` varchar(512) DEFAULT NULL COMMENT '车辆颜色',
+  `RoadHaul` varchar(512) DEFAULT NULL COMMENT '行驶里程',
+  `StatusType` int(11) DEFAULT NULL COMMENT '状态|1:代售;2:已售;4:逾期',
+  `CarSourceType` int(11) DEFAULT NULL COMMENT '卖家类型|1:商户;2:个人',
+  `Price` varchar(32) DEFAULT NULL COMMENT '价格',
+  `ParkAddress` varchar(256) default null comment '看车地址',
+  `Title` varchar(512) DEFAULT NULL COMMENT '文章标题',
+  `DeclareDate` date DEFAULT NULL COMMENT '发布日期',
+  `SourceUrl` varchar(128) DEFAULT NULL COMMENT '原始链接',
+  `FetchDateTime` datetime DEFAULT NULL COMMENT '抓取时间',
+  `LastActiveDateTime` datetime DEFAULT NULL COMMENT '最后确认有效时间',
+  `OffLineDateTime` datetime DEFAULT NULL COMMENT '确认下线时间',
+  `SellerID` varchar(32) DEFAULT NULL COMMENT '卖家ID',
+  `Contacter` varchar(512) DEFAULT NULL COMMENT '联系人',
+  `ContacterURL` varchar(512) DEFAULT NULL COMMENT '联系人链接',
+  `ContacterPhone` varchar(256) DEFAULT NULL COMMENT '联系人电话',
+  `MTime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '最后更新时间',
+  `CTime` datetime DEFAULT NULL COMMENT '创建时间',
+  PRIMARY KEY (`SEQID`),
+  UNIQUE KEY `UK_SourceUrl_DeclareDate` (`SourceUrl`,`DeclareDate`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='车辆信息'$$
+
+
+CREATE
+TRIGGER `SecondhandCar_Fundamental`.`CTIME_INSERT_BEFORE_CarInfo_Iautos`
+BEFORE INSERT ON `SecondhandCar_Fundamental`.`CarInfo_Iautos`
+FOR EACH ROW
+BEGIN
+SET NEW.CTIME = NOW();
+END
+$$
+
+delimiter $$
+
+CREATE TABLE `SellerInfo_Iautos` (
+  `SEQID` varchar(32) NOT NULL COMMENT '记录ID',
+  `SellerName` varchar(128) DEFAULT NULL COMMENT '卖家名',
+  `SellerAddress` varchar(128) DEFAULT NULL COMMENT '卖家地址',
+  `SellerPhone` varchar(128) DEFAULT NULL COMMENT '卖家电话',
+  `SellerUrl` varchar(256) DEFAULT NULL COMMENT '卖家原始链接',
+  `MTime` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '最后更新时间',
+  `CTime` datetime DEFAULT NULL COMMENT '创建时间',
+  PRIMARY KEY (`SEQID`),
+  KEY `idx_SellerUrl` (`SellerUrl`(255))
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='卖家信息'$$
+
+CREATE
+TRIGGER `SecondhandCar_Fundamental`.`CTIME_INSERT_BEFORE_SellerInfo_Iautos`
+BEFORE INSERT ON `SecondhandCar_Fundamental`.`SellerInfo_Iautos`
+FOR EACH ROW
+BEGIN
+SET NEW.CTIME = NOW();
+END
+$$
+
+
