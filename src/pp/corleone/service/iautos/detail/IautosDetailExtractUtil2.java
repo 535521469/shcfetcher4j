@@ -1,12 +1,13 @@
 package pp.corleone.service.iautos.detail;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import org.apache.commons.lang.StringUtils;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import pp.corleone.Log;
 import pp.corleone.domain.iautos.IautosCarInfo;
@@ -15,7 +16,8 @@ import pp.corleone.service.ResponseWrapper;
 
 public class IautosDetailExtractUtil2 {
 
-	public static void LogException(ResponseWrapper responseWrapper, String msg) {
+	protected static void LogException(ResponseWrapper responseWrapper,
+			String msg) {
 		Log.error(msg + ".." + responseWrapper.getUrl());
 	}
 
@@ -63,9 +65,39 @@ public class IautosDetailExtractUtil2 {
 		ici.setFetchDate(now);
 		ici.setLastActiveDate(now);
 
+		if (null == ici.getDeclareDate()) {
+			fillDeclareDate(doc, ici, responseWrapper);
+		}
+
 	}
 
-	public static void fillGearbox(Element doc, IautosCarInfo ici,
+	protected static void fillDeclareDate(Element doc, IautosCarInfo ici,
+			ResponseWrapper responseWrapper) {
+
+		Element declareDateEle = doc.select("span[class=gray]").first();
+		if (null == declareDateEle) {
+			LogException(responseWrapper, "DeclareDate");
+		} else {
+			String declareDateString = declareDateEle.text().trim()
+					.replace("更新", "");
+
+			DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+			try {
+				Date declareDate = df.parse(declareDateString);
+				ici.setDeclareDate(declareDate);
+			} catch (ParseException e) {
+				LogException(responseWrapper, "format declare date error:"
+						+ declareDateString);
+			}
+		}
+
+		if (null == ici.getDeclareDate()) {
+			throw new RuntimeException("declare date is null");
+		}
+
+	}
+
+	protected static void fillGearbox(Element doc, IautosCarInfo ici,
 			ResponseWrapper responseWrapper) {
 
 		Element gearboxElement = doc.select("li[title^=变速方式]").first();
@@ -81,15 +113,15 @@ public class IautosDetailExtractUtil2 {
 		}
 	}
 
-	public static void fillContacterAndPhone(Element doc, IautosCarInfo ici,
+	protected static void fillContacterAndPhone(Element doc, IautosCarInfo ici,
 			ResponseWrapper responseWrapper) {
 		// Element contacterPhoneDivTag = doc.select("div.div2_tel").first();
 
 		Element contacterPhoneTag = doc.select("p[class=call-num]").first();
 		String contacterPhone = null;
 
-		if (null == contacterPhoneTag) { 
-//			do nothing
+		if (null == contacterPhoneTag) {
+			// do nothing
 		} else {
 			contacterPhone = contacterPhoneTag.text();
 		}
@@ -98,8 +130,8 @@ public class IautosDetailExtractUtil2 {
 			contacterPhoneTag = doc.select("p[class=call-num call-num2]")
 					.first();
 			if (null == contacterPhoneTag) {
-//				do nothing
-			}else{
+				// do nothing
+			} else {
 				contacterPhone = contacterPhoneTag.text();
 			}
 		}
@@ -195,13 +227,13 @@ public class IautosDetailExtractUtil2 {
 	//
 	// }
 
-	public static void fillTitle(IautosCarInfo ici,
+	protected static void fillTitle(IautosCarInfo ici,
 			ResponseWrapper responseWrapper) {
 		ici.setTitle(ici.getBrand() + " " + ici.getDisplacement() + " "
 				+ ici.getGearbox());
 	}
 
-	public static void fillCarColor(Element doc, IautosCarInfo ici,
+	protected static void fillCarColor(Element doc, IautosCarInfo ici,
 			ResponseWrapper responseWrapper) {
 		Element listElement = doc.select("ul[class=list list1]").first();
 		if (null == listElement) {
@@ -219,8 +251,8 @@ public class IautosDetailExtractUtil2 {
 		}
 	}
 
-	public static void fillBrandAndManufacturer(Element doc, IautosCarInfo ici,
-			ResponseWrapper responseWrapper) {
+	protected static void fillBrandAndManufacturer(Element doc,
+			IautosCarInfo ici, ResponseWrapper responseWrapper) {
 		Element listElement = doc.select("ul[class=list]").first();
 		if (null == listElement) {
 			LogException(responseWrapper, "Gearbox And Manufacturer");
@@ -244,7 +276,7 @@ public class IautosDetailExtractUtil2 {
 		}
 	}
 
-	public static void fillDisplacement(Element detail, IautosCarInfo ici,
+	protected static void fillDisplacement(Element detail, IautosCarInfo ici,
 			ResponseWrapper responseWrapper) {
 
 		Element displacementTag = detail.select("dl[class=clearfix]").get(1)
@@ -268,7 +300,7 @@ public class IautosDetailExtractUtil2 {
 		}
 	}
 
-	public static void fillRoadhaul(Element doc, IautosCarInfo ici,
+	protected static void fillRoadhaul(Element doc, IautosCarInfo ici,
 			ResponseWrapper responseWrapper) {
 		Element roadhaulElement = doc.select("li[class=w95 cd-icon3-1]")
 				.first();
@@ -284,7 +316,7 @@ public class IautosDetailExtractUtil2 {
 		}
 	}
 
-	public static void fillPriceAndStatus(Element detail, IautosCarInfo ici,
+	protected static void fillPriceAndStatus(Element detail, IautosCarInfo ici,
 			ResponseWrapper responseWrapper) {
 
 		String priceString = getPriceLiteral(detail);
@@ -301,7 +333,7 @@ public class IautosDetailExtractUtil2 {
 		}
 	}
 
-	public static IautosStatusCode getStatusLiteral(Element detail) {
+	protected static IautosStatusCode getStatusLiteral(Element detail) {
 		Element statusSpanTag = null;
 		statusSpanTag = detail.select("div[class$=phone-show]").first();
 		if (null == statusSpanTag) {
@@ -326,12 +358,12 @@ public class IautosDetailExtractUtil2 {
 	/**
 	 * if the information is during review
 	 */
-	public static boolean isDuringValidate(Element doc) {
+	protected static boolean isDuringValidate(Element doc) {
 		String bodyString = doc.select("body").text();
 		return StringUtils.isBlank(bodyString);
 	}
 
-	public static String getPriceLiteral(Element detail) {
+	protected static String getPriceLiteral(Element detail) {
 		Element priceFontTag = detail.select("span[class=price]").first();
 		if (priceFontTag != null) {
 			return priceFontTag.text().trim();
@@ -339,7 +371,7 @@ public class IautosDetailExtractUtil2 {
 		return "";
 	}
 
-	public static void fillParkAddress(Element detail, IautosCarInfo ici,
+	protected static void fillParkAddress(Element detail, IautosCarInfo ici,
 			ResponseWrapper responseWrapper) {
 
 		Element addressElement = detail.select("dl[class=clearfix]").get(2)
@@ -357,7 +389,7 @@ public class IautosDetailExtractUtil2 {
 		}
 	}
 
-	public static void fillParkAddress_LicenseDate(Element detail,
+	protected static void fillParkAddress_LicenseDate(Element detail,
 			IautosCarInfo ici, ResponseWrapper responseWrapper) {
 
 		Elements clearfixElements = detail.select("dl[class=clearfix]");
@@ -386,7 +418,7 @@ public class IautosDetailExtractUtil2 {
 		}
 	}
 
-	public static void fillLicenceDate(Element detail, IautosCarInfo ici,
+	protected static void fillLicenceDate(Element detail, IautosCarInfo ici,
 			ResponseWrapper responseWrapper) {
 
 		Element licenceDateElement = detail.select("dl[class=clearfix]").get(0)

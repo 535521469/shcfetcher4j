@@ -50,6 +50,7 @@ public class IautosCarInfoDao {
 				.createQuery("from IautosCarInfo where sourceUrl=:sourceUrl and declareDate=:declareDate ");
 		query.setString("sourceUrl", sourceUrl);
 		query.setDate("declareDate", declareDate);
+		@SuppressWarnings("unchecked")
 		List<IautosCarInfo> carInfos = (List<IautosCarInfo>) query.list();
 		return carInfos;
 	}

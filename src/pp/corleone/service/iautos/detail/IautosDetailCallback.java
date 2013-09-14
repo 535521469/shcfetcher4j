@@ -9,7 +9,6 @@ import org.apache.commons.lang.StringUtils;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
 
 import pp.corleone.dao.DaoUtil;
 import pp.corleone.dao.iautos.IautosCarInfoDao;

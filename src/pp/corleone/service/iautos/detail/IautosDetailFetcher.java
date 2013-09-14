@@ -49,8 +49,13 @@ public class IautosDetailFetcher extends Fetcher {
 	@Override
 	public boolean isIgnore() {
 		boolean ignore = true;
+
 		IautosCarInfo carInfo = (IautosCarInfo) this.getRequestWrapper()
 				.getContext().get(IautosConstant.CAR_INFO);
+
+		if (null == carInfo.getDeclareDate()) {
+			return ignore;
+		}
 
 		Transaction tx = getSession().beginTransaction();
 
