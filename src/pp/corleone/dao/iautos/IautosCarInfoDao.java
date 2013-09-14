@@ -34,11 +34,22 @@ public class IautosCarInfoDao {
 		return carInfo;
 	}
 
+	@Deprecated
 	@SuppressWarnings("unchecked")
 	public List<IautosCarInfo> listByCarUrl(String sourceUrl, Session session) {
 		Query query = session
 				.createQuery("from IautosCarInfo where sourceUrl=:sourceUrl");
 		query.setString("sourceUrl", sourceUrl);
+		List<IautosCarInfo> carInfos = (List<IautosCarInfo>) query.list();
+		return carInfos;
+	}
+
+	public List<IautosCarInfo> listByCarUrlAndDeclareDate(String sourceUrl,
+			Date declareDate, Session session) {
+		Query query = session
+				.createQuery("from IautosCarInfo where sourceUrl=:sourceUrl and declareDate=:declareDate ");
+		query.setString("sourceUrl", sourceUrl);
+		query.setDate("declareDate", declareDate);
 		List<IautosCarInfo> carInfos = (List<IautosCarInfo>) query.list();
 		return carInfos;
 	}
@@ -58,7 +69,7 @@ public class IautosCarInfoDao {
 			IautosStatusCode statusCode, String lastActiveDate, Session session) {
 		Query query = session
 				.createQuery("from IautosCarInfo where statusType=:statusType and lastActiveDate<=:lastActiveDate");
-//				.createQuery("from IautosCarInfo where statusType=:statusType and lastActiveDate<='2013-06-17 15:38:46'");
+		// .createQuery("from IautosCarInfo where statusType=:statusType and lastActiveDate<='2013-06-17 15:38:46'");
 		query.setInteger("statusType", statusCode.getCode());
 		query.setString("lastActiveDate", lastActiveDate);
 		List<IautosCarInfo> carInfos = (List<IautosCarInfo>) query.list();

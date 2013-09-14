@@ -56,7 +56,8 @@ public class IautosDetailFetcher extends Fetcher {
 
 		List<IautosCarInfo> carInfos = null;
 		try {
-			carInfos = this.getCarDao().listByCarUrl(carInfo.getCarSourceUrl(),
+			carInfos = this.getCarDao().listByCarUrlAndDeclareDate(
+					carInfo.getCarSourceUrl(), carInfo.getDeclareDate(),
 					this.getSession());
 			tx.commit();
 		} catch (Exception e) {
@@ -96,5 +97,4 @@ public class IautosDetailFetcher extends Fetcher {
 
 		return ignore;
 	}
-
 }
