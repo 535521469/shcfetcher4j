@@ -46,60 +46,60 @@ public class IautosDetailFetcher extends Fetcher {
 		this.setCarDao(new IautosCarInfoDao(session));
 	}
 
-	@Override
-	public boolean isIgnore() {
-		boolean ignore = true;
-
-		IautosCarInfo carInfo = (IautosCarInfo) this.getRequestWrapper()
-				.getContext().get(IautosConstant.CAR_INFO);
-
-		if (null == carInfo.getDeclareDate()) {
-			return ignore;
-		}
-
-		Transaction tx = getSession().beginTransaction();
-
-		List<IautosCarInfo> carInfos = null;
-		try {
-			carInfos = this.getCarDao().listByCarUrlAndDeclareDate(
-					carInfo.getCarSourceUrl(), carInfo.getDeclareDate(),
-					this.getSession());
-			tx.commit();
-		} catch (Exception e) {
-			tx.rollback();
-			e.printStackTrace();
-		}
-
-		if (carInfos.size() == 0) {
-			// there's no record
-			return false;
-		} else {
-			for (IautosCarInfo ici : carInfos) {
-				if (null != ici.getDeclareDate()
-						&& null != carInfo.getDeclareDate()
-						&& ici.getDeclareDate()
-								.equals(carInfo.getDeclareDate())) {
-					// exist carinfo's declare date is not null and is equals
-					// with the car's declare date
-					this.getLogger().debug(
-							"car is exist :" + ici.getSeqID()
-									+ ici.getDeclareDate() + "" + " "
-									+ ici.getCarSourceUrl());
-					break;
-				}
-
-				if (ici.getStatusType() != null
-						&& IautosStatusCode.STATUS_TYPE_FOR_SALE.getCode() != ici
-								.getStatusType()) {
-					// the car life cycle is over
-					getLogger().debug(
-							"car life cycle is over :" + ici.getStatusType()
-									+ this.getRequestWrapper().getUrl());
-					break;
-				}
-			}
-		}
-
-		return ignore;
-	}
+//	@Override
+//	public boolean isIgnore() {
+//		boolean ignore = true;
+//
+//		IautosCarInfo carInfo = (IautosCarInfo) this.getRequestWrapper()
+//				.getContext().get(IautosConstant.CAR_INFO);
+//
+//		if (null == carInfo.getDeclareDate()) {
+//			return ignore;
+//		}
+//
+//		Transaction tx = getSession().beginTransaction();
+//
+//		List<IautosCarInfo> carInfos = null;
+//		try {
+//			carInfos = this.getCarDao().listByCarUrlAndDeclareDate(
+//					carInfo.getCarSourceUrl(), carInfo.getDeclareDate(),
+//					this.getSession());
+//			tx.commit();
+//		} catch (Exception e) {
+//			tx.rollback();
+//			e.printStackTrace();
+//		}
+//
+//		if (carInfos.size() == 0) {
+//			// there's no record
+//			return false;
+//		} else {
+//			for (IautosCarInfo ici : carInfos) {
+//				if (null != ici.getDeclareDate()
+//						&& null != carInfo.getDeclareDate()
+//						&& ici.getDeclareDate()
+//								.equals(carInfo.getDeclareDate())) {
+//					// exist carinfo's declare date is not null and is equals
+//					// with the car's declare date
+//					this.getLogger().debug(
+//							"car is exist :" + ici.getSeqID()
+//									+ ici.getDeclareDate() + "" + " "
+//									+ ici.getCarSourceUrl());
+//					break;
+//				}
+//
+//				if (ici.getStatusType() != null
+//						&& IautosStatusCode.STATUS_TYPE_FOR_SALE.getCode() != ici
+//								.getStatusType()) {
+//					// the car life cycle is over
+//					getLogger().debug(
+//							"car life cycle is over :" + ici.getStatusType()
+//									+ this.getRequestWrapper().getUrl());
+//					break;
+//				}
+//			}
+//		}
+//
+//		return ignore;
+//	}
 }

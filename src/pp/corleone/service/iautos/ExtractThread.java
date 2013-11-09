@@ -104,7 +104,7 @@ public class ExtractThread extends Thread {
 			} else {
 				try {
 
-					Future<Map<String, Collection<?>>> f = IautosResource.threadPool
+					Future<Map<String, Collection<?>>> f = IautosResource.extracterPool
 							.submit(cb);
 
 					if (null == f) {

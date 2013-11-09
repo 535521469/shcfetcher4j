@@ -5,24 +5,18 @@ import java.util.concurrent.Future;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import pp.corleone.ConfigManager;
+import pp.corleone.Log;
 import pp.corleone.service.Callback;
 import pp.corleone.service.Fetcher;
 import pp.corleone.service.ResponseWrapper;
 
 public class FetcherThread extends Thread {
 
-	protected final Logger getLogger() {
-		return LoggerFactory.getLogger(this.getClass());
-	}
-
 	@Override
 	public void run() {
 
-		ThreadPoolExecutor pe = IautosResource.threadPool;
+		ThreadPoolExecutor pe = IautosResource.fetcherPool;
 
 		Fetcher fetcher = null;
 
@@ -35,14 +29,14 @@ public class FetcherThread extends Thread {
 				fetcher = IautosResource.fetchQueue.poll(fetcher_idle_sleep,
 						TimeUnit.SECONDS);
 				if (null == fetcher) {
-					getLogger().info("non fetchable ...");
+					Log.info("non fetchable ...");
 					continue;
 				}
 
 				if (fetcher.getRequestWrapper().getReferRequestWrappers()
 						.size() > 0) {
 
-					getLogger().debug(
+					Log.debug(
 							"fetch priority "
 									+ fetcher.getRequestWrapper().getPriority()
 									+ " "
@@ -51,7 +45,7 @@ public class FetcherThread extends Thread {
 									+ fetcher.getRequestWrapper()
 											.getLastRequestUrl());
 				} else {
-					getLogger().debug(
+					Log.debug(
 							"fetch priority "
 									+ fetcher.getRequestWrapper().getPriority()
 									+ " "
@@ -68,10 +62,13 @@ public class FetcherThread extends Thread {
 						boolean offeredFlag = false;
 
 						do {
-							offeredFlag = IautosResource.extractQueue.offer(cb,
-									500, TimeUnit.MILLISECONDS);
+//							offeredFlag = IautosResource.extractQueue.offer(cb,
+//									500, TimeUnit.MILLISECONDS);
+							
+							IautosResource.extractQueue.put(cb);
+							offeredFlag = true;
 
-							getLogger().debug(
+							Log.debug(
 									"offer callback "
 											+ cb.getClass()
 											+ " refer to "
@@ -81,7 +78,7 @@ public class FetcherThread extends Thread {
 
 						} while (!offeredFlag);
 					} else {
-						getLogger().debug(
+						Log.debug(
 								"ignore fetch :"
 										+ fetcher.getRequestWrapper().getUrl());
 					}

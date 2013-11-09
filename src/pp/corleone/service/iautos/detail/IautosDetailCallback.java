@@ -1,5 +1,6 @@
 package pp.corleone.service.iautos.detail;
 
+import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -10,6 +11,7 @@ import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.jsoup.nodes.Document;
 
+import pp.corleone.Log;
 import pp.corleone.dao.DaoUtil;
 import pp.corleone.dao.iautos.IautosCarInfoDao;
 import pp.corleone.dao.iautos.IautosSellerInfoDao;
@@ -161,7 +163,19 @@ public class IautosDetailCallback extends Callback {
 					ici.getCarSourceUrl(), ici.getDeclareDate(),
 					this.getSession())) {
 				this.getCarDao().addCarInfo(ici, this.getSession());
-
+				Log.info("add "
+						+ ici.getTitle()
+						+ " @@~; "
+						+ DateFormat.getDateInstance().format(
+								ici.getDeclareDate()) + ","
+						+ ici.getCarSourceUrl());
+			} else {
+				Log.info("ignore "
+						+ ici.getTitle()
+						+ " @@~; "
+						+ DateFormat.getDateInstance().format(
+								ici.getDeclareDate()) + ","
+						+ ici.getCarSourceUrl());
 			}
 			tx.commit();
 		} catch (Exception e) {

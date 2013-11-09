@@ -1,8 +1,13 @@
+
+[2013.11.09 v1.0.6]
+1.公布日期采用detail,list页面中采集到的公布日期中，较晚的一个作为公布日期。
+2.fetcher和extracter队列都使用优先级队列
+
 [2013.09.14 v1.0.5]
-�ظ����ӣ���ͬ�������ڣ������¼
+重复链接，不同发布日期，冗余记录
 
 [2013.09.10 v1.0.4]
-�İ棬��Ŀȫ�ǵĸİ�
+改版，面目全非的改版
 
 [2013.07.11 v1.0.3]
-list callback�ǣ�������detail callback ����
+list callback是，公用了detail callback 对象。

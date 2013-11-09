@@ -42,11 +42,9 @@ public class IautosListCallback extends Callback {
 		Elements ddTags = liCar.select("dd.date");
 		if (ddTags.size() > 0) {
 			String declareDateStr = ddTags.first().text();
-
 			if (declareDateStr.indexOf("\u524D") == -1) {
 				// \u524D = qian / (before)
 				// find the word means it's able to format
-
 				DateFormat format1 = new SimpleDateFormat(
 						"EEE MMM dd HH:mm:ss zzz yyyy", Locale.US);
 				try {

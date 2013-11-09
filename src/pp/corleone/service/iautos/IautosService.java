@@ -2,6 +2,7 @@ package pp.corleone.service.iautos;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -18,6 +19,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import pp.corleone.ConfigManager;
+import pp.corleone.Log;
 import pp.corleone.dao.DaoUtil;
 import pp.corleone.dao.iautos.IautosCarInfoDao;
 import pp.corleone.dao.iautos.IautosSellerInfoDao;
@@ -96,23 +98,25 @@ public class IautosService extends Service {
 
 	@Override
 	public void extract() {
-		Thread extract = new ExtractThread();
-		extract.start();
+//		Thread extract = new ExtractThread();
+//		extract.start();
+		
+		IautosResource.extracterPool.submit(new ExtractThread());
+		
 	}
 
 	class ChangeCityFetcherManager implements Runnable {
 
-		protected final Logger getLogger() {
-			return LoggerFactory.getLogger(this.getClass());
-		}
-
 		@Override
 		public void run() {
+
+			Log.info("-----------start----------------"
+					+ Calendar.getInstance());
 
 			String city = ConfigManager.getInstance().getConfigItem(
 					IautosConstant.CITIES, null);
 
-			this.getLogger().info("get cities config ->" + city);
+			Log.info("get cities config ->" + city);
 			Set<String> cities = new HashSet<String>(Arrays.asList(city
 					.split(",")));
 			List<Fetcher> fs = new ArrayList<Fetcher>();

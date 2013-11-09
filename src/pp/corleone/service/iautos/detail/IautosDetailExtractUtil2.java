@@ -18,7 +18,7 @@ public class IautosDetailExtractUtil2 {
 
 	protected static void LogException(ResponseWrapper responseWrapper,
 			String msg) {
-		Log.error(msg + ".." + responseWrapper.getUrl());
+		Log.warn(msg + ".." + responseWrapper.getUrl());
 	}
 
 	public static String getSellerUrl(Element ele,
@@ -65,9 +65,9 @@ public class IautosDetailExtractUtil2 {
 		ici.setFetchDate(now);
 		ici.setLastActiveDate(now);
 
-		if (null == ici.getDeclareDate()) {
-			fillDeclareDate(doc, ici, responseWrapper);
-		}
+		// if (null == ici.getDeclareDate()) {
+		fillDeclareDate(doc, ici, responseWrapper);
+		// }
 
 	}
 
@@ -79,12 +79,18 @@ public class IautosDetailExtractUtil2 {
 			LogException(responseWrapper, "DeclareDate");
 		} else {
 			String declareDateString = declareDateEle.text().trim()
-					.replace("¸üĞÂ", "");
+					.replace("æ›´æ–°", "");
 
 			DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
 			try {
 				Date declareDate = df.parse(declareDateString);
-				ici.setDeclareDate(declareDate);
+				if (null == ici.getDeclareDate()) {
+					ici.setDeclareDate(declareDate);
+				} else {
+					if (declareDate.after(ici.getDeclareDate())) {
+						ici.setDeclareDate(declareDate);
+					}
+				}
 			} catch (ParseException e) {
 				LogException(responseWrapper, "format declare date error:"
 						+ declareDateString);
@@ -100,7 +106,7 @@ public class IautosDetailExtractUtil2 {
 	protected static void fillGearbox(Element doc, IautosCarInfo ici,
 			ResponseWrapper responseWrapper) {
 
-		Element gearboxElement = doc.select("li[title^=±äËÙ·½Ê½]").first();
+		Element gearboxElement = doc.select("li[title^=å˜é€Ÿæ–¹å¼]").first();
 		if (null == gearboxElement) {
 			LogException(responseWrapper, "gearbox");
 		} else {
@@ -142,8 +148,12 @@ public class IautosDetailExtractUtil2 {
 			ici.setContacterPhone(contacterPhone);
 		}
 
-		Element contacterSpanTag = doc.select("div[class=seller-name]").first()
-				.select("span").first();
+		Element contacterSpanTag = null;
+		Element div_seller = doc.select("div[class=seller-name]").first();
+
+		if (div_seller != null) {
+			contacterSpanTag = div_seller.select("span").first();
+		}
 
 		if (null == contacterSpanTag) {
 			LogException(responseWrapper, "Contracter");
@@ -241,8 +251,8 @@ public class IautosDetailExtractUtil2 {
 		} else {
 			Elements eles = listElement.select("li");
 			for (Element element : eles) {
-				if (element.select("span").first().text().trim().equals("³µÉíÑÕÉ«")) {
-					ici.setColor(element.text().replace("³µÉíÑÕÉ«", "").trim());
+				if (element.select("span").first().text().trim().equals("è½¦èº«é¢œè‰²")) {
+					ici.setColor(element.text().replace("è½¦èº«é¢œè‰²", "").trim());
 				}
 			}
 			if (StringUtils.isBlank(ici.getColor())) {
@@ -259,12 +269,12 @@ public class IautosDetailExtractUtil2 {
 		} else {
 			Elements eles = listElement.select("li");
 			for (Element element : eles) {
-				if (element.select("span").first().text().trim().equals("Éú²ú³§¼Ò")) {
-					ici.setManufacturer(element.text().replace("Éú²ú³§¼Ò", "")
+				if (element.select("span").first().text().trim().equals("ç”Ÿäº§å‚å®¶")) {
+					ici.setManufacturer(element.text().replace("ç”Ÿäº§å‚å®¶", "")
 							.trim());
 				} else if (element.select("span").first().text().trim()
-						.equals("Æ·ÅÆ³µÏµ")) {
-					ici.setBrand(element.text().replace("Æ·ÅÆ³µÏµ", "").trim());
+						.equals("å“ç‰Œè½¦ç³»")) {
+					ici.setBrand(element.text().replace("å“ç‰Œè½¦ç³»", "").trim());
 				}
 			}
 			if (StringUtils.isBlank(ici.getBrand())) {
@@ -285,7 +295,7 @@ public class IautosDetailExtractUtil2 {
 			LogException(responseWrapper, "displacement");
 		} else {
 			String displacement = displacementTag.text();
-			String[] values = displacement.split("£¬");
+			String[] values = displacement.split("ï¼Œ");
 
 			for (String value : values) {
 				if (value.trim().endsWith("L")) {
@@ -402,10 +412,10 @@ public class IautosDetailExtractUtil2 {
 		for (Element clearfix : clearfixElements) {
 			String attr = clearfix.select("dt").text();
 			String val = clearfix.select("dd").text();
-			if ("¿´³µµØÖ·".equals(attr)) {
+			if ("çœ‹è½¦åœ°å€".equals(attr)) {
 				ici.setParkAddress(val.trim());
 
-			} else if ("Ê×´ÎÉÏÅÆ".equals(attr)) {
+			} else if ("é¦–æ¬¡ä¸Šç‰Œ".equals(attr)) {
 				ici.setLicenseDate(val.trim());
 			}
 		}

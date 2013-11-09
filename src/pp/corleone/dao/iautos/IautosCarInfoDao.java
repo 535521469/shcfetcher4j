@@ -100,6 +100,7 @@ public class IautosCarInfoDao {
 		session.save(ici);
 	}
 
+	@Deprecated
 	public void addCarInfo(IautosCarInfo ici) {
 		this.getSession().save(ici);
 	}
